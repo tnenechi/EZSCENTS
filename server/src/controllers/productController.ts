@@ -10,24 +10,46 @@ export const getProducts = async (req: Request, res: Response) => {
 
   const keyword = req.query.keyword
     ? {
-        name: {
-          $regex: req.query.keyword,
-          $options: 'i',
-        },
+        $or: [
+          { name: { $regex: req.query.keyword as string, $options: 'i' } },
+          { brand: { $regex: req.query.keyword as string, $options: 'i' } },
+          { category: { $regex: req.query.keyword as string, $options: 'i' } },
+        ],
       }
     : {};
 
   const category = req.query.category ? { category: req.query.category as string } : {};
+  const brand = req.query.brand ? { brand: req.query.brand as string } : {};
   const isFeatured = req.query.isFeatured === 'true' ? { isFeatured: true } : {};
 
-  const query = { ...keyword, ...category, ...isFeatured };
+  const query = { ...keyword, ...category, ...brand, ...isFeatured };
+
+  // Sort logic
+  let sort: any = { createdAt: -1 }; // Default to newest
+  if (req.query.sort === 'price-asc') {
+    sort = { 'variants.price': 1 };
+  } else if (req.query.sort === 'price-desc') {
+    sort = { 'variants.price': -1 };
+  } else if (req.query.sort === 'newest') {
+    sort = { createdAt: -1 };
+  }
 
   const count = await Product.countDocuments(query);
   const products = await Product.find(query)
+    .sort(sort)
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
   res.json({ products, page, pages: Math.ceil(count / pageSize) });
+};
+
+// @desc    Get unique brands and categories
+// @route   GET /api/products/filters
+// @access  Public
+export const getFilters = async (req: Request, res: Response) => {
+  const brands = await Product.distinct('brand');
+  const categories = await Product.distinct('category');
+  res.json({ brands, categories });
 };
 
 // @desc    Fetch single product

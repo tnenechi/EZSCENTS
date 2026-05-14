@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import CollectionsPage from "./pages/CollectionsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
@@ -12,13 +14,30 @@ import AdminProductListPage from "./pages/admin/AdminProductListPage";
 import AdminProductEditPage from "./pages/admin/AdminProductEditPage";
 import AdminPromotionListPage from "./pages/admin/AdminPromotionListPage";
 import AdminPromotionEditPage from "./pages/admin/AdminPromotionEditPage";
+import { useAuthStore } from "./store/authStore";
+import { useCartStore } from "./store/cartStore";
 
 function App() {
+  const userInfo = useAuthStore((state) => state.userInfo);
+  const setItems = useCartStore((state) => state.setItems);
+
+  useEffect(() => {
+    const cartKey = userInfo ? `cart_${userInfo._id}` : 'cart_guest';
+    const savedCart = localStorage.getItem(cartKey);
+    if (savedCart) {
+      try {
+        setItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error('Failed to parse cart', e);
+      }
+    }
+  }, [userInfo, setItems]);
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/shop" element={<HomePage />} />
+        <Route path="/shop" element={<CollectionsPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<LoginPage />} />
