@@ -4,8 +4,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Trash2, Loader2, Image as ImageIcon, ChevronLeft, Save } from 'lucide-react';
-import axios from 'axios';
 import { getProductById, createProduct, updateProduct } from '../../services/productService';
+import { uploadImage } from '../../services/uploadService';
 import AdminLayout from '../../components/layout/AdminLayout';
 
 const productSchema = z.object({
@@ -82,35 +82,39 @@ const AdminProductEditPage = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    
-    // Cloudinary direct upload or through our backend service
-    // For now, let's assume our backend has a direct upload endpoint or we use a helper
-    // Since we set up Cloudinary in the backend, let's use that.
     
     try {
-      // Simplification: In a real app, you'd send this to your Express backend
-      // which then uploads to Cloudinary.
       for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         const reader = new FileReader();
-        reader.readAsDataURL(files[i]);
-        reader.onloadend = async () => {
-          const base64data = reader.result;
-          // You would call your backend API here
-          // const res = await api.post('/upload', { image: base64data });
-          // setImages(prev => [...prev, res.data.url]);
-          
-          // FOR PROTOTYPE: Just using a placeholder URL since we don't have the upload API fully wired
-          setImages(prev => [...prev, 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80']);
-        };
+        
+        const uploadPromise = new Promise<string>((resolve, reject) => {
+          reader.readAsDataURL(file);
+          reader.onloadend = async () => {
+            try {
+              const base64data = reader.result as string;
+              const imageUrl = await uploadImage(base64data);
+              resolve(imageUrl);
+            } catch (err) {
+              reject(err);
+            }
+          };
+          reader.onerror = reject;
+        });
+
+        const url = await uploadPromise;
+        setImages(prev => [...prev, url]);
       }
     } catch (error) {
       console.error('Upload failed', error);
+      alert('Failed to upload image. Please check your connection and Cloudinary settings.');
     } finally {
       setIsUploading(false);
+      // Reset input
+      e.target.value = '';
     }
   };
 
@@ -126,6 +130,7 @@ const AdminProductEditPage = () => {
       navigate('/admin/products');
     } catch (error) {
       console.error('Save failed', error);
+      alert('Failed to save product. Please check all fields.');
     } finally {
       setIsSaving(false);
     }

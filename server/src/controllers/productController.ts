@@ -17,8 +17,13 @@ export const getProducts = async (req: Request, res: Response) => {
       }
     : {};
 
-  const count = await Product.countDocuments({ ...keyword });
-  const products = await Product.find({ ...keyword })
+  const category = req.query.category ? { category: req.query.category as string } : {};
+  const isFeatured = req.query.isFeatured === 'true' ? { isFeatured: true } : {};
+
+  const query = { ...keyword, ...category, ...isFeatured };
+
+  const count = await Product.countDocuments(query);
+  const products = await Product.find(query)
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 

@@ -1,6 +1,12 @@
 import type{ Request, Response } from 'express';
-import User from '../models/User.js';
-import generateToken from '../utils/generateToken.js';
+import User from '../models/User';
+
+// Extend Request type to include session
+declare module 'express-session' {
+  interface SessionData {
+    userId: string;
+  }
+}
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -27,19 +33,21 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   });
 
   if (user) {
+    // Store user ID in session
+    req.session.userId = user._id.toString();
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
     });
   } else {
     res.status(400).json({ message: 'Invalid user data' });
   }
 };
 
-// @desc    Auth user & get token
+// @desc    Auth user & get token (now session)
 // @route   POST /api/auth/login
 // @access  Public
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
@@ -48,14 +56,43 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const user: any = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
+    // Store user ID in session
+    req.session.userId = user._id.toString();
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
     });
   } else {
     res.status(401).json({ message: 'Invalid email or password' });
+  }
+};
+
+// @desc    Logout user / clear session
+// @route   POST /api/auth/logout
+// @access  Private
+export const logoutUser = async (req: Request, res: Response): Promise<void> => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(500).json({ message: 'Could not log out' });
+      return;
+    }
+    res.clearCookie('connect.sid'); // Default name for express-session cookie
+    res.json({ message: 'Logged out successfully' });
+  });
+};
+
+// @desc    Get user profile (helper to check session)
+// @route   GET /api/auth/profile
+// @access  Private
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+  const user = await User.findById(req.session.userId).select('-password');
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).json({ message: 'User not found' });
+
   }
 };

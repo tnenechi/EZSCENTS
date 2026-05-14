@@ -136,10 +136,6 @@ const CartPage = () => {
                   <div className="w-1 h-1 bg-premium-gold rounded-full" />
                   Free Delivery on orders over ₦50,000
                 </div>
-                <div className="flex items-center gap-3 text-[10px] text-gray-500 uppercase tracking-widest">
-                  <div className="w-1 h-1 bg-premium-gold rounded-full" />
-                  Secure payment via Paystack
-                </div>
               </div>
             </div>
           </div>

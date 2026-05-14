@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Package, Plus, Edit, Trash2, Search, ExternalLink } from 'lucide-react';
@@ -6,10 +6,12 @@ import { getProducts, deleteProduct } from '../../services/productService';
 import AdminLayout from '../../components/layout/AdminLayout';
 
 const AdminProductListPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
+  
   const { data, isLoading, error } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: () => getProducts(),
+    queryKey: ['admin-products', searchTerm],
+    queryFn: () => getProducts(searchTerm),
   });
 
   const deleteMutation = useMutation({
@@ -45,6 +47,8 @@ const AdminProductListPage = () => {
         <input 
           type="text" 
           placeholder="Search inventory..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-premium-gray/20 border border-white/5 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors"
         />
       </div>
@@ -127,7 +131,7 @@ const AdminProductListPage = () => {
           
           {data?.products.length === 0 && (
             <div className="py-20 text-center border border-dashed border-white/10 mt-4">
-              <p className="text-gray-500 uppercase tracking-widest text-[10px]">Your inventory is empty.</p>
+              <p className="text-gray-500 uppercase tracking-widest text-[10px]">No products found in inventory.</p>
             </div>
           )}
         </div>

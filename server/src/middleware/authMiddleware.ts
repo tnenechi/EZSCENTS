@@ -1,27 +1,14 @@
-import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 import User from "../models/User";
-
-interface DecodedToken {
-  id: string;
-}
 
 export const protect = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (req.session && req.session.userId) {
     try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as unknown as DecodedToken;
-
-      (req as any).user = await User.findById(decoded.id).select("-password");
+      (req as any).user = await User.findById(req.session.userId).select("-password");
       
       if (!(req as any).user) {
         res.status(401).json({ message: "Not authorized, user not found" });
@@ -31,13 +18,11 @@ export const protect = async (
       return next();
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: "Not authorized, token failed" });
+      res.status(401).json({ message: "Not authorized, session failed" });
       return;
     }
-  }
-
-  if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
+  } else {
+    res.status(401).json({ message: "Not authorized, no session" });
     return;
   }
 };

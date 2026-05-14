@@ -52,29 +52,16 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
-    const isAdmin = (req as any).user && (req as any).user.role === 'admin';
-    
     order.isPaid = true;
     order.paidAt = new Date();
     
-    // If admin is marking it paid manually
-    if (isAdmin && !req.body.id) {
-      order.paymentResult = {
-        id: 'MANUAL_' + Date.now(),
-        status: 'COMPLETED',
-        update_time: new Date().toISOString(),
-        email_address: (req as any).user.email,
-        reference: 'ADMIN_VERIFIED',
-      };
-    } else {
-      order.paymentResult = {
-        id: req.body.id,
-        status: req.body.status,
-        update_time: req.body.update_time,
-        email_address: req.body.email_address,
-        reference: req.body.reference,
-      };
-    }
+    order.paymentResult = {
+      id: 'MANUAL_' + Date.now(),
+      status: 'COMPLETED',
+      update_time: new Date().toISOString(),
+      email_address: (req as any).user?.email || 'admin@ezscents.com',
+      reference: 'ADMIN_VERIFIED',
+    };
     
     order.status = 'Processing';
 

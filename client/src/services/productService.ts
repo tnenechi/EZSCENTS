@@ -1,12 +1,12 @@
 import api from "./api";
 import type { Product } from "../types";
 
-export const getProducts = async (keyword = "", pageNumber = 1) => {
+export const getProducts = async (keyword = "", category = "", isFeatured = false, pageNumber = 1) => {
   const { data } = await api.get<{
     products: Product[];
     page: number;
     pages: number;
-  }>(`/products?keyword=${keyword}&pageNumber=${pageNumber}`);
+  }>(`/products?keyword=${keyword}&category=${category}&isFeatured=${isFeatured}&pageNumber=${pageNumber}`);
   return data;
 };
 

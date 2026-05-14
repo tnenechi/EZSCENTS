@@ -121,11 +121,11 @@ const OrderDetailsPage = () => {
             {/* Payment Info */}
             <div className="p-6 bg-premium-gray/20 border border-white/5 space-y-4">
               <div className="flex items-center gap-3">
-                {order.paymentMethod === 'Bank Transfer' ? <Landmark size={20} className="text-premium-gold" /> : <CreditCard size={20} className="text-premium-gold" />}
+                <Landmark size={20} className="text-premium-gold" />
                 <h3 className="text-sm font-bold uppercase tracking-widest">Payment: {order.paymentMethod}</h3>
               </div>
               
-              {order.paymentMethod === 'Bank Transfer' && !order.isPaid && (
+              {!order.isPaid && (
                 <div className="space-y-4 pt-4 border-t border-white/5">
                   <div className="flex gap-3 text-yellow-500 bg-yellow-500/5 p-4 text-[10px] uppercase tracking-widest font-bold">
                     <AlertCircle size={16} className="shrink-0" />

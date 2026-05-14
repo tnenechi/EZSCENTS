@@ -4,10 +4,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { CreditCard, Landmark, Truck, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
-import { PaystackButton } from 'react-paystack';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
-import { createOrder, payOrder } from '../services/orderService';
+import { createOrder } from '../services/orderService';
 import MainLayout from '../components/layout/MainLayout';
 
 const shippingSchema = z.object({
@@ -23,7 +22,6 @@ type ShippingFormValues = z.infer<typeof shippingSchema>;
 
 const CheckoutPage = () => {
   const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<'Paystack' | 'Bank Transfer'>('Paystack');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [formData, setFormData] = useState<ShippingFormValues | null>(null);
   
@@ -48,22 +46,6 @@ const CheckoutPage = () => {
     setStep(2);
   };
 
-  const handlePaystackSuccess = async (reference: any, orderId: string) => {
-    try {
-      await payOrder(orderId, {
-        id: reference.reference,
-        status: reference.status,
-        update_time: new Date().toISOString(),
-        email_address: formData?.guestEmail || userInfo?.email,
-        reference: reference.reference,
-      });
-      navigate(`/order/${orderId}`);
-    } catch (error) {
-      console.error('Payment verification failed', error);
-      navigate(`/order/${orderId}`); // Still go to order page, but it might show as unpaid
-    }
-  };
-
   const onPlaceOrder = async (data: ShippingFormValues) => {
     setIsPlacingOrder(true);
     try {
@@ -83,7 +65,7 @@ const CheckoutPage = () => {
           state: data.state,
           phone: data.phone,
         },
-        paymentMethod,
+        paymentMethod: 'Bank Transfer',
         totalPrice: getTotal(),
         guestInfo: !userInfo ? {
           name: data.guestName || '',
@@ -93,32 +75,14 @@ const CheckoutPage = () => {
 
       const createdOrder = await createOrder(orderData);
       
-      if (paymentMethod === 'Bank Transfer') {
-        clearCart();
-        navigate(`/order/${createdOrder._id}`);
-      } else {
-        // Return the ID to be used in Paystack success
-        return createdOrder._id;
-      }
+      clearCart();
+      navigate(`/order/${createdOrder._id}`);
     } catch (error) {
       console.error('Order creation failed', error);
       alert('Failed to place order. Please try again.');
     } finally {
       setIsPlacingOrder(false);
     }
-  };
-
-  const paystackProps = {
-    email: formData?.guestEmail || userInfo?.email || '',
-    amount: getTotal() * 100, // Paystack expects kobo
-    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_placeholder',
-    text: 'Complete Purchase',
-    onSuccess: (reference: any) => {
-      // We need to place the order first, then pay it.
-      // But in Paystack flow, usually we pay first then create order?
-      // For this flow, let's create order first if paymentMethod is selected.
-    },
-    onClose: () => alert("Wait! You haven't finished your purchase."),
   };
 
   if (items.length === 0) {
@@ -209,31 +173,12 @@ const CheckoutPage = () => {
                   </h2>
 
                   <div className="space-y-4">
-                    <button 
-                      type="button"
-                      onClick={() => setPaymentMethod('Paystack')}
-                      className={`w-full flex items-center justify-between p-6 border transition-all ${paymentMethod === 'Paystack' ? 'border-premium-gold bg-premium-gold/5' : 'border-white/10 hover:border-white/30'}`}
+                    <div 
+                      className="w-full flex items-center justify-between p-6 border border-premium-gold bg-premium-gold/5 transition-all"
                     >
                       <div className="flex items-center gap-4 text-left">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'Paystack' ? 'border-premium-gold' : 'border-gray-600'}`}>
-                          {paymentMethod === 'Paystack' && <div className="w-2 h-2 bg-premium-gold rounded-full" />}
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm uppercase tracking-widest">Paystack</p>
-                          <p className="text-[10px] text-gray-500 uppercase tracking-widest">Card, USSD, Bank Transfer</p>
-                        </div>
-                      </div>
-                      <CreditCard size={24} className="text-gray-600" />
-                    </button>
-
-                    <button 
-                      type="button"
-                      onClick={() => setPaymentMethod('Bank Transfer')}
-                      className={`w-full flex items-center justify-between p-6 border transition-all ${paymentMethod === 'Bank Transfer' ? 'border-premium-gold bg-premium-gold/5' : 'border-white/10 hover:border-white/30'}`}
-                    >
-                      <div className="flex items-center gap-4 text-left">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'Bank Transfer' ? 'border-premium-gold' : 'border-gray-600'}`}>
-                          {paymentMethod === 'Bank Transfer' && <div className="w-2 h-2 bg-premium-gold rounded-full" />}
+                        <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center border-premium-gold">
+                          <div className="w-2 h-2 bg-premium-gold rounded-full" />
                         </div>
                         <div>
                           <p className="font-bold text-sm uppercase tracking-widest">Manual Bank Transfer</p>
@@ -241,7 +186,7 @@ const CheckoutPage = () => {
                         </div>
                       </div>
                       <Landmark size={24} className="text-gray-600" />
-                    </button>
+                    </div>
                   </div>
 
                   <div className="flex gap-4">
@@ -272,35 +217,19 @@ const CheckoutPage = () => {
                     <div className="flex justify-between items-start pt-4 border-t border-white/5">
                       <div>
                         <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1 font-bold">Payment Method</p>
-                        <p className="text-sm font-medium">{paymentMethod}</p>
+                        <p className="text-sm font-medium">Bank Transfer</p>
                       </div>
                       <button type="button" onClick={() => setStep(2)} className="text-[10px] text-premium-gold uppercase font-bold tracking-widest">Edit</button>
                     </div>
                   </div>
 
-                  {paymentMethod === 'Paystack' ? (
-                    <PaystackButton
-                      {...paystackProps}
-                      className="w-full bg-premium-gold text-black py-5 text-[10px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:opacity-90 transition-all"
-                      onSuccess={(ref) => {
-                        handleSubmit(async (data) => {
-                          const orderId = await onPlaceOrder(data);
-                          if (orderId) {
-                            await handlePaystackSuccess(ref, orderId);
-                            clearCart();
-                          }
-                        })();
-                      }}
-                    />
-                  ) : (
-                    <button 
-                      onClick={handleSubmit(onPlaceOrder)}
-                      disabled={isPlacingOrder}
-                      className="w-full bg-premium-gold text-black py-5 text-[10px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:opacity-90 transition-all disabled:opacity-50"
-                    >
-                      {isPlacingOrder ? <Loader2 className="animate-spin" size={20} /> : 'Complete Purchase'}
-                    </button>
-                  )}
+                  <button 
+                    onClick={handleSubmit(onPlaceOrder)}
+                    disabled={isPlacingOrder}
+                    className="w-full bg-premium-gold text-black py-5 text-[10px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:opacity-90 transition-all disabled:opacity-50"
+                  >
+                    {isPlacingOrder ? <Loader2 className="animate-spin" size={20} /> : 'Complete Purchase'}
+                  </button>
                 </div>
               )}
             </div>

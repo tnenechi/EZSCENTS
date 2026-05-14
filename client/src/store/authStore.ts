@@ -6,7 +6,7 @@ import api from "../services/api";
 interface AuthStore {
   userInfo: User | null;
   setUserInfo: (user: User | null) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -14,9 +14,14 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       userInfo: null,
       setUserInfo: (user) => set({ userInfo: user }),
-      logout: () => {
-        set({ userInfo: null });
-        localStorage.removeItem("userInfo");
+      logout: async () => {
+        try {
+          await api.post('/auth/logout');
+        } catch (error) {
+          console.error('Logout failed', error);
+        } finally {
+          set({ userInfo: null });
+        }
       },
     }),
     {

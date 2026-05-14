@@ -37,7 +37,8 @@ const orderSchema = new Schema({
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['Paystack', 'Bank Transfer'],
+    enum: ['Bank Transfer'],
+    default: 'Bank Transfer',
   },
   paymentResult: {
     id: String,
