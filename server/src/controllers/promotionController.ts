@@ -13,13 +13,13 @@ export const getActivePromotions = async (req: Request, res: Response) => {
 // @route   POST /api/promotions
 // @access  Private/Admin
 export const createPromotion = async (req: Request, res: Response) => {
-  const { title, description, image, link, startDate, endDate } = req.body;
+  const { title, description, image, products, startDate, endDate } = req.body;
 
   const promotion = new Promotion({
     title,
     description,
     image,
-    link,
+    products,
     startDate,
     endDate,
   });
@@ -32,7 +32,7 @@ export const createPromotion = async (req: Request, res: Response) => {
 // @route   PUT /api/promotions/:id
 // @access  Private/Admin
 export const updatePromotion = async (req: Request, res: Response) => {
-  const { title, description, image, link, isActive, startDate, endDate } = req.body;
+  const { title, description, image, products, isActive, startDate, endDate } = req.body;
 
   const promotion = await Promotion.findById(req.params.id);
 
@@ -40,7 +40,7 @@ export const updatePromotion = async (req: Request, res: Response) => {
     promotion.title = title || promotion.title;
     promotion.description = description || promotion.description;
     promotion.image = image || promotion.image;
-    promotion.link = link || promotion.link;
+    promotion.products = products || promotion.products;
     promotion.isActive = isActive !== undefined ? isActive : promotion.isActive;
     promotion.startDate = startDate || promotion.startDate;
     promotion.endDate = endDate || promotion.endDate;

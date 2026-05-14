@@ -24,6 +24,7 @@ const CheckoutPage = () => {
   const [step, setStep] = useState(1);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [formData, setFormData] = useState<ShippingFormValues | null>(null);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   
   const { items, getTotal, clearCart } = useCartStore();
   const { userInfo } = useAuthStore();
@@ -76,7 +77,8 @@ const CheckoutPage = () => {
       const createdOrder = await createOrder(orderData);
       
       clearCart();
-      navigate(`/order/${createdOrder._id}`);
+      setCreatedOrderId(createdOrder._id);
+      setStep(4);
     } catch (error) {
       console.error('Order creation failed', error);
       alert('Failed to place order. Please try again.');
@@ -85,10 +87,36 @@ const CheckoutPage = () => {
     }
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && step < 4) {
     navigate('/cart');
     return null;
   }
+
+  const BankTransferInstructions = () => (
+    <div className="bg-premium-gold/5 border border-premium-gold/20 p-6 space-y-4 animate-fade-in">
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-premium-gold">Payment Instructions</h3>
+      <div className="space-y-4 text-xs">
+        <div className="space-y-1">
+          <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">Bank Details</p>
+          <p className="font-bold">ZENITH BANK</p>
+          <p className="font-bold">1234567890</p>
+          <p className="font-bold text-premium-gold">EZSCENTS INTERNATIONAL LIMITED</p>
+        </div>
+        
+        <div className="space-y-2 text-gray-400 leading-relaxed">
+          <p>Your order will only be processed when payment has been received.</p>
+          <p className="text-red-400/80 italic">Please note: Orders not paid for within 24 hours of purchase will be canceled and invalid.</p>
+        </div>
+
+        <div className="pt-4 border-t border-white/5 space-y-2">
+          <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">After Payment</p>
+          <p>Send proof of payment (screenshot) to customer care via:</p>
+          <p className="font-bold text-premium-gold">+234 900 000 0000 (WhatsApp)</p>
+          <p className="text-[9px] uppercase tracking-widest text-gray-500 mt-2">Include your full name and order ID</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <MainLayout showSidebar={false}>
@@ -96,7 +124,7 @@ const CheckoutPage = () => {
         {/* Progress Steps */}
         <div className="flex items-center justify-between mb-16 relative">
           <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -z-10" />
-          {[1, 2, 3].map((s) => (
+          {[1, 2, 3, 4].map((s) => (
             <div 
               key={s}
               className={`flex flex-col items-center gap-2 bg-premium-black px-4 transition-all duration-500 ${step >= s ? 'text-premium-gold' : 'text-gray-600'}`}
@@ -105,14 +133,14 @@ const CheckoutPage = () => {
                 {step > s ? <CheckCircle2 size={20} /> : s}
               </div>
               <span className="text-[10px] uppercase tracking-widest font-bold">
-                {s === 1 ? 'Shipping' : s === 2 ? 'Payment' : 'Review'}
+                {s === 1 ? 'Shipping' : s === 2 ? 'Payment' : s === 3 ? 'Review' : 'Success'}
               </span>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
+          <div className={step === 4 ? "lg:col-span-3" : "lg:col-span-2"}>
             <div className="space-y-8 animate-fade-in">
               {step === 1 && (
                 <form onSubmit={handleSubmit(onSubmitShipping)} className="space-y-8">
@@ -172,7 +200,7 @@ const CheckoutPage = () => {
                     Payment Method
                   </h2>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div 
                       className="w-full flex items-center justify-between p-6 border border-premium-gold bg-premium-gold/5 transition-all"
                     >
@@ -187,6 +215,8 @@ const CheckoutPage = () => {
                       </div>
                       <Landmark size={24} className="text-gray-600" />
                     </div>
+
+                    <BankTransferInstructions />
                   </div>
 
                   <div className="flex gap-4">
@@ -223,6 +253,8 @@ const CheckoutPage = () => {
                     </div>
                   </div>
 
+                  <BankTransferInstructions />
+
                   <button 
                     onClick={handleSubmit(onPlaceOrder)}
                     disabled={isPlacingOrder}
@@ -232,33 +264,69 @@ const CheckoutPage = () => {
                   </button>
                 </div>
               )}
+
+              {step === 4 && (
+                <div className="text-center py-12 space-y-8 animate-fade-in">
+                  <div className="flex justify-center">
+                    <div className="w-20 h-20 rounded-full bg-premium-gold/10 border border-premium-gold flex items-center justify-center text-premium-gold">
+                      <CheckCircle2 size={40} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-bold uppercase tracking-tighter">Order Placed Successfully!</h2>
+                    <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold">Order ID: #{createdOrderId?.slice(-6).toUpperCase()}</p>
+                  </div>
+
+                  <div className="max-w-md mx-auto">
+                    <BankTransferInstructions />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto pt-8">
+                    <button 
+                      onClick={() => navigate(`/order/${createdOrderId}`)}
+                      className="flex-1 bg-white text-black py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-premium-gold transition-all"
+                    >
+                      Track My Order
+                    </button>
+                    <button 
+                      onClick={() => navigate('/shop')}
+                      className="flex-1 border border-white/10 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+                    >
+                      Continue Shopping
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Mini Summary */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-premium-gray/20 p-6 border border-white/5 rounded-sm">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-6 border-b border-white/5 pb-4">Order Review</h3>
-              <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={`${item.product._id}-${item.variant._id}`} className="flex gap-4">
-                    <div className="w-12 h-12 bg-premium-gray overflow-hidden">
-                      <img src={item.product.images[0]} className="w-full h-full object-cover" />
+          {step < 4 && (
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 bg-premium-gray/20 p-6 border border-white/5 rounded-sm">
+                <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-6 border-b border-white/5 pb-4">Order Review</h3>
+                <div className="space-y-4 mb-6">
+                  {items.map((item) => (
+                    <div key={`${item.product._id}-${item.variant._id}`} className="flex gap-4">
+                      <div className="w-12 h-12 bg-premium-gray overflow-hidden">
+                        <img src={item.product.images[0]} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[10px] font-bold uppercase truncate">{item.product.name}</p>
+                        <p className="text-[10px] text-gray-500 uppercase">{item.quantity} x {item.variant.size}</p>
+                      </div>
+                      <p className="text-[10px] font-bold">₦{item.variant.price.toLocaleString()}</p>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-bold uppercase truncate">{item.product.name}</p>
-                      <p className="text-[10px] text-gray-500 uppercase">{item.quantity} x {item.variant.size}</p>
-                    </div>
-                    <p className="text-[10px] font-bold">₦{item.variant.price.toLocaleString()}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-white/5 pt-4 flex justify-between items-end">
-                <p className="text-[10px] uppercase tracking-widest text-gray-500">Total Amount</p>
-                <p className="text-xl font-bold text-premium-gold">₦{getTotal().toLocaleString()}</p>
+                  ))}
+                </div>
+                <div className="border-t border-white/5 pt-4 flex justify-between items-end">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-500">Total Amount</p>
+                  <p className="text-xl font-bold text-premium-gold">₦{getTotal().toLocaleString()}</p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </MainLayout>

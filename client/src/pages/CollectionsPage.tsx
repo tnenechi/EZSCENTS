@@ -11,12 +11,13 @@ const CollectionsPage = () => {
   const keyword = searchParams.get("keyword") || "";
   const category = searchParams.get("category") || "";
   const brand = searchParams.get("brand") || "";
+  const promotionId = searchParams.get("promotionId") || "";
   const sort = searchParams.get("sort") || "newest";
   const page = Number(searchParams.get("pageNumber")) || 1;
 
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["products", keyword, category, brand, sort, page],
-    queryFn: () => getProducts(keyword, category, false, brand, sort, page),
+    queryKey: ["products", keyword, category, brand, sort, page, promotionId],
+    queryFn: () => getProducts(keyword, category, false, brand, sort, page, promotionId),
   });
 
   const { data: filtersData } = useQuery({

@@ -98,8 +98,8 @@ Admin status is determined during registration. If a user registers with an emai
 
 
 ##  TODO
-- I want the homepage to show the hero section, and below it, in place of the collection section, I want it to show the featured section showing featured products.
-- I want the collection section to have its own page. So when a user clicks "shop all" or "Explore Collection", it goes to that page.
-- A user should be able to search for a product by it's product name, brand name, and category. 
-- On the collections page, a user use be able to filter by brand name and category. And should be able to sort by price.
-
+-- Create a profile page for the customer. Currently, when the customer profile icon is clicked, it just goes to the homepage. 
+-- For the user profile (both the customer and admin), add these features/tabs:
+    - change passoword
+    - order tracking
+    - past orders

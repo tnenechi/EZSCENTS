@@ -4,7 +4,7 @@ const promotionSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String },
   image: { type: String, required: true }, // Cloudinary URL
-  link: { type: String }, // Link to product or category
+  products: [{ type: Schema.Types.ObjectId, ref: 'Product' }], // Products included in promotion
   isActive: { type: Boolean, default: true },
   startDate: { type: Date },
   endDate: { type: Date }

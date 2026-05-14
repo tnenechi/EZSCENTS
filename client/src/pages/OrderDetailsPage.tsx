@@ -126,15 +126,32 @@ const OrderDetailsPage = () => {
               </div>
               
               {!order.isPaid && (
-                <div className="space-y-4 pt-4 border-t border-white/5">
-                  <div className="flex gap-3 text-yellow-500 bg-yellow-500/5 p-4 text-[10px] uppercase tracking-widest font-bold">
+                <div className="space-y-6 pt-4 border-t border-white/5 animate-fade-in">
+                  <div className="flex gap-3 text-yellow-500 bg-yellow-500/5 p-4 text-[10px] uppercase tracking-widest font-bold border border-yellow-500/10">
                     <AlertCircle size={16} className="shrink-0" />
-                    <p>Please transfer ₦{order.totalPrice.toLocaleString()} to the account below and send proof to hello@ezscents.com</p>
+                    <p>Awaiting Bank Transfer Verification</p>
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <p><span className="text-gray-500 uppercase text-[10px] tracking-widest block mb-1 font-bold">Bank Name</span> Kuda Bank</p>
-                    <p><span className="text-gray-500 uppercase text-[10px] tracking-widest block mb-1 font-bold">Account Number</span> 1234567890</p>
-                    <p><span className="text-gray-500 uppercase text-[10px] tracking-widest block mb-1 font-bold">Account Name</span> EzScents Luxury</p>
+                  
+                  <div className="space-y-4 text-xs">
+                    <div className="space-y-1">
+                      <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">Bank Details</p>
+                      <p className="font-bold">ZENITH BANK</p>
+                      <p className="font-bold">1234567890</p>
+                      <p className="font-bold text-premium-gold uppercase">EZSCENTS INTERNATIONAL LIMITED</p>
+                      <p className="font-bold mt-2">Amount: ₦{order.totalPrice.toLocaleString()}</p>
+                    </div>
+                    
+                    <div className="space-y-2 text-gray-400 leading-relaxed">
+                      <p>Your order will only be processed when payment has been received.</p>
+                      <p className="text-red-400/80 italic">Please note: Orders not paid for within 24 hours of purchase will be canceled and invalid.</p>
+                    </div>
+
+                    <div className="pt-4 border-t border-white/5 space-y-2">
+                      <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">After Payment</p>
+                      <p>Send proof of payment (screenshot) to customer care via:</p>
+                      <p className="font-bold text-premium-gold uppercase tracking-widest">+234 900 000 0000 (WhatsApp)</p>
+                      <p className="text-[9px] uppercase tracking-widest text-gray-500 mt-2">Include your name and Order ID: #{order._id.slice(-6).toUpperCase()}</p>
+                    </div>
                   </div>
                 </div>
               )}

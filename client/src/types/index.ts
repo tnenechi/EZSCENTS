@@ -24,7 +24,7 @@ export interface Promotion {
   title: string;
   description?: string;
   image: string;
-  link?: string;
+  products?: string[];
   isActive: boolean;
   startDate?: string;
   endDate?: string;

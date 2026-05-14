@@ -50,7 +50,7 @@ const PromotionsSidebar = () => {
                 </p>
               )}
               <Link
-                to={promo.link || "/shop"}
+                to={`/shop?promotionId=${promo._id}`}
                 className="flex items-center gap-2 text-premium-gold text-[10px] font-bold uppercase tracking-widest group/link"
               >
                 Discover Now

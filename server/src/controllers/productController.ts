@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Product from '../models/Product';
+import Promotion from '../models/Promotion';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -22,7 +23,15 @@ export const getProducts = async (req: Request, res: Response) => {
   const brand = req.query.brand ? { brand: req.query.brand as string } : {};
   const isFeatured = req.query.isFeatured === 'true' ? { isFeatured: true } : {};
 
-  const query = { ...keyword, ...category, ...brand, ...isFeatured };
+  let promotionQuery = {};
+  if (req.query.promotionId) {
+    const promotion = await Promotion.findById(req.query.promotionId);
+    if (promotion) {
+      promotionQuery = { _id: { $in: promotion.products } };
+    }
+  }
+
+  const query = { ...keyword, ...category, ...brand, ...isFeatured, ...promotionQuery };
 
   // Sort logic
   let sort: any = { createdAt: -1 }; // Default to newest

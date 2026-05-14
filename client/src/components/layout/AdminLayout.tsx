@@ -77,7 +77,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-premium-black">
+      <main className="flex-1 overflow-y-auto bg-premium-black admin-content">
         <div className="p-12 max-w-7xl mx-auto">
           {children}
         </div>

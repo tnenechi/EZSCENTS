@@ -7,13 +7,14 @@ export const getProducts = async (
   isFeatured = false, 
   brand = "",
   sort = "",
-  pageNumber = 1
+  pageNumber = 1,
+  promotionId = ""
 ) => {
   const { data } = await api.get<{
     products: Product[];
     page: number;
     pages: number;
-  }>(`/products?keyword=${keyword}&category=${category}&isFeatured=${isFeatured}&brand=${brand}&sort=${sort}&pageNumber=${pageNumber}`);
+  }>(`/products?keyword=${keyword}&category=${category}&isFeatured=${isFeatured}&brand=${brand}&sort=${sort}&pageNumber=${pageNumber}&promotionId=${promotionId}`);
   return data;
 };
 

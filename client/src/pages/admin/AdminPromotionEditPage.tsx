@@ -3,15 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { ChevronLeft, Save, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, Save, Loader2, Plus, Trash2, Image as ImageIcon, Search } from 'lucide-react';
 import { createPromotion, updatePromotion, getActivePromotions } from '../../services/promotionService';
+import { getProducts } from '../../services/productService';
+import { uploadImage } from '../../services/uploadService';
 import AdminLayout from '../../components/layout/AdminLayout';
+import { useQuery } from '@tanstack/react-query';
 
 const promotionSchema = z.object({
   title: z.string().min(2, 'Title is required'),
   description: z.string().optional(),
   image: z.string().min(1, 'Image is required'),
-  link: z.string().optional(),
+  products: z.array(z.string()).default([]),
   isActive: z.boolean().default(true),
 });
 
@@ -24,6 +27,8 @@ const AdminPromotionEditPage = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
+  const [isUploading, setIsUploading] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
 
   const {
     register,
@@ -36,10 +41,27 @@ const AdminPromotionEditPage = () => {
     resolver: zodResolver(promotionSchema),
     defaultValues: {
       isActive: true,
+      products: [],
     }
   });
 
   const currentImage = watch('image');
+  const selectedProductIds = watch('products') || [];
+
+  const { data: productsData } = useQuery({
+    queryKey: ['admin-products-all'],
+    queryFn: () => getProducts('', '', false, '', '', 1), // Get first page to start, or adjust if needed
+  });
+
+  // For promotion product selection, we might want all products or a searchable list
+  // Given the current getProducts signature, we'll use a simple search if needed
+  const { data: searchResults } = useQuery({
+    queryKey: ['product-search-promo', productSearch],
+    queryFn: () => getProducts(productSearch),
+    enabled: productSearch.length > 0
+  });
+
+  const displayProducts = productSearch ? searchResults?.products : productsData?.products;
 
   useEffect(() => {
     if (isEditMode) {
@@ -52,7 +74,7 @@ const AdminPromotionEditPage = () => {
               title: promo.title,
               description: promo.description,
               image: promo.image,
-              link: promo.link,
+              products: promo.products || [],
               isActive: promo.isActive,
             });
           }
@@ -65,6 +87,48 @@ const AdminPromotionEditPage = () => {
       fetchPromo();
     }
   }, [id, isEditMode, reset]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const reader = new FileReader();
+      const uploadPromise = new Promise<string>((resolve, reject) => {
+        reader.readAsDataURL(file);
+        reader.onloadend = async () => {
+          try {
+            const base64data = reader.result as string;
+            const imageUrl = await uploadImage(base64data);
+            resolve(imageUrl);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.onerror = reject;
+      });
+
+      const url = await uploadPromise;
+      setValue('image', url);
+    } catch (error) {
+      console.error('Upload failed', error);
+      alert('Failed to upload banner image.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const toggleProduct = (productId: string) => {
+    const current = [...selectedProductIds];
+    const index = current.indexOf(productId);
+    if (index > -1) {
+      current.splice(index, 1);
+    } else {
+      current.push(productId);
+    }
+    setValue('products', current);
+  };
 
   const onSubmit = async (data: PromotionFormValues) => {
     setIsSaving(true);
@@ -114,39 +178,89 @@ const AdminPromotionEditPage = () => {
               <textarea {...register('description')} rows={3} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all" placeholder="Tell customers about the offer..." />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Redirect Link (URL Path)</label>
-                <input {...register('link')} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all" placeholder="e.g. /shop?category=niche" />
-              </div>
-              <div className="flex items-center gap-3 pt-8">
-                <input type="checkbox" {...register('isActive')} id="isActive" className="w-4 h-4 accent-premium-gold" />
-                <label htmlFor="isActive" className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Active & Visible</label>
-              </div>
+            <div className="flex items-center gap-3 pt-4">
+              <input type="checkbox" {...register('isActive')} id="isActive" className="w-4 h-4 accent-premium-gold" />
+              <label htmlFor="isActive" className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Active & Visible</label>
             </div>
           </section>
 
           <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
             <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">Banner Image</h2>
             
-            <div className="space-y-4">
-              <div className="aspect-[21/9] bg-premium-black border border-white/5 relative overflow-hidden flex items-center justify-center">
+            <div className="space-y-6">
+              <div className="aspect-[21/9] bg-premium-black border border-white/5 relative overflow-hidden flex items-center justify-center group">
                 {currentImage ? (
-                  <img src={currentImage} className="w-full h-full object-cover" />
+                  <>
+                    <img src={currentImage} className="w-full h-full object-cover" />
+                    <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                      <ImageIcon size={32} className="text-premium-gold mb-2" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Change Banner</span>
+                      <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
+                    </label>
+                  </>
                 ) : (
-                  <p className="text-[10px] uppercase tracking-widest text-gray-600 font-bold">No Image Selected</p>
+                  <label className="flex flex-col items-center justify-center gap-4 cursor-pointer hover:text-premium-gold transition-colors">
+                    {isUploading ? <Loader2 className="animate-spin" size={32} /> : <Plus size={32} />}
+                    <span className="text-[10px] uppercase tracking-widest font-bold">Upload Banner (21:9 recommended)</span>
+                    <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
+                  </label>
                 )}
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Image URL (from Cloudinary)</label>
-                <input 
-                  {...register('image')} 
-                  className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all" 
-                  placeholder="Paste Cloudinary URL here"
-                />
-                {errors.image && <p className="text-red-500 text-[9px] uppercase font-bold">{errors.image.message}</p>}
-              </div>
+              <input type="hidden" {...register('image')} />
+              {errors.image && <p className="text-red-500 text-[9px] uppercase font-bold text-center">{errors.image.message}</p>}
+            </div>
+          </section>
+
+          <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">Include Products</h2>
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                {selectedProductIds.length} Products Selected
+              </span>
+            </div>
+            
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+              <input 
+                type="text" 
+                placeholder="SEARCH TO ADD PRODUCTS..." 
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                className="w-full bg-premium-black border border-white/10 pl-12 pr-4 py-3 text-xs focus:border-premium-gold outline-none"
+              />
+            </div>
+
+            <div className="max-h-96 overflow-y-auto border border-white/5 bg-premium-black/40 divide-y divide-white/5">
+              {displayProducts?.map((product) => (
+                <div 
+                  key={product._id} 
+                  onClick={() => toggleProduct(product._id)}
+                  className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-white/[0.02] transition-colors ${
+                    selectedProductIds.includes(product._id) ? 'bg-white/[0.05]' : ''
+                  }`}
+                >
+                  <input 
+                    type="checkbox" 
+                    checked={selectedProductIds.includes(product._id)}
+                    onChange={() => {}} // Handled by div click
+                    className="w-4 h-4 accent-premium-gold"
+                  />
+                  <img src={product.images[0]} className="w-10 h-14 object-cover rounded-sm" />
+                  <div className="flex-1">
+                    <p className="text-[10px] uppercase tracking-widest text-premium-gold font-bold">{product.brand}</p>
+                    <p className="text-xs font-bold uppercase tracking-tight">{product.name}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-gray-500 uppercase">{product.category}</p>
+                    <p className="text-xs font-bold">₦{Math.min(...product.variants.map(v => v.price)).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+              {(!displayProducts || displayProducts.length === 0) && (
+                <div className="p-8 text-center text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                  No products found
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -156,7 +270,7 @@ const AdminPromotionEditPage = () => {
             <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-500 pb-4 border-b border-white/5">Actions</h3>
             <button 
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || isUploading}
               className="w-full bg-white text-black py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all disabled:opacity-50"
             >
               {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
