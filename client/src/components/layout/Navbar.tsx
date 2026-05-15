@@ -91,7 +91,7 @@ const Navbar = () => {
           {userInfo ? (
             <div className="flex items-center gap-4">
               <Link
-                to="/admin"
+                to={userInfo.role === 'admin' ? "/admin" : "/profile"}
                 className="flex items-center gap-2 hover:text-premium-gold transition-colors"
               >
                 <UserIcon size={20} />
@@ -222,7 +222,7 @@ const Navbar = () => {
                   {userInfo ? (
                     <>
                       <Link 
-                        to="/admin" 
+                        to={userInfo.role === 'admin' ? "/admin" : "/profile"}
                         onClick={() => setIsMenuOpen(false)}
                         className="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-white"
                       >

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
+import { sendOrderConfirmation, sendOrderStatusUpdate } from '../services/emailService';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -28,6 +29,14 @@ export const addOrderItems = async (req: Request, res: Response) => {
   });
 
   const createdOrder = await order.save();
+  
+  // Populate user for email confirmation if registered
+  if (createdOrder.user) {
+    await createdOrder.populate('user', 'name email');
+  }
+
+  // Trigger Email (Async)
+  sendOrderConfirmation(createdOrder);
 
   res.status(201).json(createdOrder);
 };
@@ -66,6 +75,14 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
     order.status = 'Processing';
 
     const updatedOrder = await order.save();
+    
+    // Populate user for status update email
+    if (updatedOrder.user) {
+      await updatedOrder.populate('user', 'name email');
+    }
+    
+    sendOrderStatusUpdate(updatedOrder);
+
     res.json(updatedOrder);
   } else {
     res.status(404).json({ message: 'Order not found' });
@@ -76,7 +93,7 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 export const getMyOrders = async (req: Request, res: Response) => {
-  const orders = await Order.find({ user: (req as any).user._id });
+  const orders = await Order.find({ user: (req as any).user._id }).populate('user', 'name email');
   res.json(orders);
 };
 
@@ -84,7 +101,7 @@ export const getMyOrders = async (req: Request, res: Response) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 export const getOrders = async (req: Request, res: Response) => {
-  const orders = await Order.find({}).populate('user', 'id name');
+  const orders = await Order.find({}).populate('user', 'name email');
   res.json(orders);
 };
 
@@ -100,6 +117,14 @@ export const updateOrderToDelivered = async (req: Request, res: Response) => {
     order.status = 'Delivered';
 
     const updatedOrder = await order.save();
+    
+    // Populate user for status update email
+    if (updatedOrder.user) {
+      await updatedOrder.populate('user', 'name email');
+    }
+    
+    sendOrderStatusUpdate(updatedOrder);
+
     res.json(updatedOrder);
   } else {
     res.status(404).json({ message: 'Order not found' });

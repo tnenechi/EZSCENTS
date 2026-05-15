@@ -146,14 +146,14 @@ const AdminPromotionEditPage = () => {
     }
   };
 
-  if (isLoading) return <AdminLayout><div className="animate-pulse py-20 text-center">Loading Promotion...</div></AdminLayout>;
+  if (isLoading) return <AdminLayout><div className="animate-pulse py-20 text-center text-gray-400 uppercase tracking-widest font-bold">Loading Promotion...</div></AdminLayout>;
 
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-12">
         <button 
           onClick={() => navigate('/admin/promotions')}
-          className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest"
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest"
         >
           <ChevronLeft size={16} /> Back to List
         </button>
@@ -168,19 +168,19 @@ const AdminPromotionEditPage = () => {
             <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">Banner Content</h2>
             
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Campaign Title</label>
-              <input {...register('title')} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all" placeholder="e.g. Summer Scent Sale" />
+              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Campaign Title</label>
+              <input {...register('title')} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all text-white" placeholder="e.g. Summer Scent Sale" />
               {errors.title && <p className="text-red-500 text-[9px] uppercase font-bold">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Short Description</label>
-              <textarea {...register('description')} rows={3} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all" placeholder="Tell customers about the offer..." />
+              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Short Description</label>
+              <textarea {...register('description')} rows={3} className="w-full bg-premium-black border border-white/10 px-4 py-4 text-sm focus:border-premium-gold outline-none transition-all text-white" placeholder="Tell customers about the offer..." />
             </div>
 
             <div className="flex items-center gap-3 pt-4">
               <input type="checkbox" {...register('isActive')} id="isActive" className="w-4 h-4 accent-premium-gold" />
-              <label htmlFor="isActive" className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Active & Visible</label>
+              <label htmlFor="isActive" className="text-[10px] uppercase tracking-widest text-gray-300 font-bold">Active & Visible</label>
             </div>
           </section>
 
@@ -200,8 +200,8 @@ const AdminPromotionEditPage = () => {
                   </>
                 ) : (
                   <label className="flex flex-col items-center justify-center gap-4 cursor-pointer hover:text-premium-gold transition-colors">
-                    {isUploading ? <Loader2 className="animate-spin" size={32} /> : <Plus size={32} />}
-                    <span className="text-[10px] uppercase tracking-widest font-bold">Upload Banner (21:9 recommended)</span>
+                    {isUploading ? <Loader2 className="animate-spin text-premium-gold" size={32} /> : <Plus size={32} className="text-gray-400" />}
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Upload Banner (21:9 recommended)</span>
                     <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
                   </label>
                 )}
@@ -214,24 +214,24 @@ const AdminPromotionEditPage = () => {
           <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">Include Products</h2>
-              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+              <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
                 {selectedProductIds.length} Products Selected
               </span>
             </div>
             
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <input 
                 type="text" 
                 placeholder="SEARCH TO ADD PRODUCTS..." 
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
-                className="w-full bg-premium-black border border-white/10 pl-12 pr-4 py-3 text-xs focus:border-premium-gold outline-none"
+                className="w-full bg-premium-black border border-white/10 pl-12 pr-4 py-3 text-xs focus:border-premium-gold outline-none text-white font-bold"
               />
             </div>
 
             <div className="max-h-96 overflow-y-auto border border-white/5 bg-premium-black/40 divide-y divide-white/5">
-              {displayProducts?.map((product) => (
+              {displayProducts?.map((product: any) => (
                 <div 
                   key={product._id} 
                   onClick={() => toggleProduct(product._id)}
@@ -248,16 +248,16 @@ const AdminPromotionEditPage = () => {
                   <img src={product.images[0]} className="w-10 h-14 object-cover rounded-sm" />
                   <div className="flex-1">
                     <p className="text-[10px] uppercase tracking-widest text-premium-gold font-bold">{product.brand}</p>
-                    <p className="text-xs font-bold uppercase tracking-tight">{product.name}</p>
+                    <p className="text-xs font-bold uppercase tracking-tight text-white">{product.name}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-gray-500 uppercase">{product.category}</p>
-                    <p className="text-xs font-bold">₦{Math.min(...product.variants.map(v => v.price)).toLocaleString()}</p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold">{product.category}</p>
+                    <p className="text-xs font-bold text-white">₦{Math.min(...product.variants.map((v: any) => v.price)).toLocaleString()}</p>
                   </div>
                 </div>
               ))}
               {(!displayProducts || displayProducts.length === 0) && (
-                <div className="p-8 text-center text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                <div className="p-8 text-center text-gray-400 text-[10px] font-bold uppercase tracking-widest">
                   No products found
                 </div>
               )}
@@ -267,7 +267,7 @@ const AdminPromotionEditPage = () => {
 
         <div className="space-y-8">
           <div className="sticky top-8 bg-premium-gray/20 p-8 border border-white/5 rounded-sm space-y-6">
-            <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-500 pb-4 border-b border-white/5">Actions</h3>
+            <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-300 pb-4 border-b border-white/5">Actions</h3>
             <button 
               type="submit"
               disabled={isSaving || isUploading}
@@ -279,7 +279,7 @@ const AdminPromotionEditPage = () => {
             <button 
               type="button"
               onClick={() => navigate('/admin/promotions')}
-              className="w-full bg-transparent border border-white/10 text-gray-500 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+              className="w-full bg-transparent border border-white/10 text-gray-400 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all font-bold"
             >
               Discard Changes
             </button>

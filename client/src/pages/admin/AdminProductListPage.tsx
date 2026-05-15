@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Package, Plus, Edit, Trash2, Search, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, ExternalLink } from 'lucide-react';
 import { getProducts, deleteProduct } from '../../services/productService';
 import AdminLayout from '../../components/layout/AdminLayout';
 
@@ -31,7 +31,7 @@ const AdminProductListPage = () => {
     <AdminLayout>
       <div className="flex justify-between items-end mb-12 pb-6 border-b border-white/5">
         <div>
-          <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2">Inventory Control</h2>
+          <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2 font-bold">Inventory Control</h2>
           <h1 className="text-4xl font-bold tracking-tight uppercase">Products</h1>
         </div>
         <Link 
@@ -43,13 +43,13 @@ const AdminProductListPage = () => {
       </div>
 
       <div className="relative mb-8">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input 
           type="text" 
           placeholder="Search inventory..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-premium-gray/20 border border-white/5 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors"
+          className="w-full bg-premium-gray/20 border border-white/5 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors text-white"
         />
       </div>
 
@@ -63,7 +63,7 @@ const AdminProductListPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/5 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+              <tr className="border-b border-white/5 text-[10px] uppercase tracking-widest text-gray-400 font-bold">
                 <th className="py-4 pr-4">Image</th>
                 <th className="py-4 px-4">Brand & Name</th>
                 <th className="py-4 px-4">Category</th>
@@ -81,23 +81,23 @@ const AdminProductListPage = () => {
                 return (
                   <tr key={product._id} className="group hover:bg-white/[0.02] transition-colors">
                     <td className="py-5 pr-4">
-                      <div className="w-12 h-16 bg-premium-gray overflow-hidden rounded-sm">
+                      <div className="w-12 h-16 bg-premium-gray overflow-hidden rounded-sm border border-white/5">
                         <img src={product.images[0]} className="w-full h-full object-cover" />
                       </div>
                     </td>
                     <td className="py-5 px-4">
                       <p className="text-[10px] uppercase tracking-widest text-premium-gold font-bold mb-1">{product.brand}</p>
-                      <p className="text-xs font-bold uppercase tracking-tight">{product.name}</p>
+                      <p className="text-xs font-bold uppercase tracking-tight text-white">{product.name}</p>
                     </td>
                     <td className="py-5 px-4">
-                      <span className="text-[10px] uppercase text-gray-400 bg-white/5 px-2 py-1">{product.category}</span>
+                      <span className="text-[10px] uppercase text-gray-300 bg-white/5 px-2 py-1 font-bold tracking-widest">{product.category}</span>
                     </td>
                     <td className="py-5 px-4">
-                      <p className="text-[10px] text-gray-500 uppercase tracking-widest">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
                         {product.variants.length} Sizes
                       </p>
                     </td>
-                    <td className="py-5 px-4 font-bold text-xs">
+                    <td className="py-5 px-4 font-bold text-xs text-white">
                       ₦{minPrice.toLocaleString()} {maxPrice > minPrice && `- ₦${maxPrice.toLocaleString()}`}
                     </td>
                     <td className="py-5 pl-4 text-right">
@@ -105,19 +105,19 @@ const AdminProductListPage = () => {
                         <Link 
                           to={`/product/${product._id}`}
                           target="_blank"
-                          className="p-2 text-gray-500 hover:text-white transition-colors"
+                          className="p-2 text-gray-400 hover:text-white transition-colors"
                         >
                           <ExternalLink size={16} />
                         </Link>
                         <Link 
                           to={`/admin/products/${product._id}/edit`}
-                          className="p-2 text-gray-500 hover:text-premium-gold transition-colors"
+                          className="p-2 text-gray-400 hover:text-premium-gold transition-colors"
                         >
                           <Edit size={16} />
                         </Link>
                         <button 
                           onClick={() => handleDelete(product._id)}
-                          className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+                          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -131,7 +131,7 @@ const AdminProductListPage = () => {
           
           {data?.products.length === 0 && (
             <div className="py-20 text-center border border-dashed border-white/10 mt-4">
-              <p className="text-gray-500 uppercase tracking-widest text-[10px]">No products found in inventory.</p>
+              <p className="text-gray-400 uppercase tracking-widest text-[10px] font-bold">No products found in inventory.</p>
             </div>
           )}
         </div>

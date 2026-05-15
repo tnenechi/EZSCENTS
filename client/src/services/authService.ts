@@ -10,3 +10,8 @@ export const register = async (name: string, email: string, password: string): P
   const { data } = await api.post<User>('/auth/register', { name, email, password });
   return data;
 };
+
+export const changePassword = async (currentPassword: string, newPassword: string): Promise<{ message: string }> => {
+  const { data } = await api.put<{ message: string }>('/auth/profile/password', { currentPassword, newPassword });
+  return data;
+};

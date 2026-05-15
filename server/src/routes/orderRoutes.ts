@@ -7,11 +7,11 @@ import {
   getOrders,
   updateOrderToDelivered,
 } from "../controllers/orderController";
-import { protect, admin } from "../middleware/authMiddleware";
+import { protect, admin, tryProtect } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.route("/").post(addOrderItems).get(protect, admin, getOrders);
+router.route("/").post(tryProtect, addOrderItems).get(protect, admin, getOrders);
 router.route("/myorders").get(protect, getMyOrders);
 router.route("/:id").get(getOrderById);
 router.route("/:id/pay").put(protect, updateOrderToPaid);

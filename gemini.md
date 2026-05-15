@@ -93,13 +93,17 @@ Admin status is determined during registration. If a user registers with an emai
 ## 📝 Development Conventions
 - **Naming:** CamelCase for functions/variables, PascalCase for Components/Models.
 - **Validation:** Use Zod schemas for both frontend forms and backend request bodies.
-- **Auth:** JWT is stored in local storage and sent via the `Authorization: Bearer <token>` header (handled by `api.ts` interceptor).
+- **Auth:** Sessions are used for persistent authentication. `tryProtect` middleware handles optional user identification for guest-friendly routes.
 - **Layouts:** Wrap pages in `MainLayout` for customer views and `AdminLayout` for management views.
 
+## ✨ Recent Enhancements
+- **Transactional Emails:** Integrated Resend for automated order confirmations and status updates.
+- **Unified Profile:** Consolidated order history and live tracking into a single "Orders" tab for customers.
+- **Admin Security:** Dedicated security management within the admin dashboard for password changes.
+- **UI/UX:** Improved visual contrast across all admin management interfaces for better accessibility.
 
 ##  TODO
--- Create a profile page for the customer. Currently, when the customer profile icon is clicked, it just goes to the homepage. 
--- For the user profile (both the customer and admin), add these features/tabs:
-    - change passoword
-    - order tracking
-    - past orders
+-- Implement advanced analytics for admin dashboard (Top selling products, monthly revenue trends)
+-- Add "Add to Wishlist" functionality for registered users
+-- Implement user reviews and ratings for products
+

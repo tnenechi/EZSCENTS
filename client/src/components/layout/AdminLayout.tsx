@@ -7,7 +7,8 @@ import {
   Tag, 
   Users, 
   ArrowLeft,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
@@ -31,6 +32,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
     { name: 'Products', path: '/admin/products', icon: Package },
     { name: 'Promotions', path: '/admin/promotions', icon: Tag },
+    { name: 'Security', path: '/admin/security', icon: ShieldCheck },
   ];
 
   if (!userInfo || userInfo.role !== 'admin') return null;
@@ -57,7 +59,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 className={`flex items-center justify-between p-4 text-[10px] font-bold uppercase tracking-widest transition-all rounded-sm ${
                   isActive 
                     ? 'bg-premium-gold text-black' 
-                    : 'text-gray-500 hover:text-white hover:bg-white/5'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -71,8 +73,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </nav>
 
         <div className="p-8 border-t border-white/5">
-          <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Signed in as</p>
-          <p className="text-xs font-bold truncate">{userInfo.name}</p>
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Signed in as</p>
+          <p className="text-xs font-bold truncate text-white">{userInfo.name}</p>
         </div>
       </aside>
 

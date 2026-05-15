@@ -24,7 +24,7 @@ const AdminDashboardPage = () => {
   return (
     <AdminLayout>
       <div className="mb-12">
-        <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2">Overview</h2>
+        <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2 font-bold">Overview</h2>
         <h1 className="text-4xl font-bold tracking-tight uppercase">Dashboard</h1>
       </div>
 
@@ -41,7 +41,7 @@ const AdminDashboardPage = () => {
                 </span>
               )}
             </div>
-            <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1 font-bold">{stat.name}</p>
+            <p className="text-[10px] uppercase tracking-widest text-gray-300 mb-1 font-bold">{stat.name}</p>
             <p className="text-2xl font-bold">{stat.value}</p>
           </div>
         ))}
@@ -54,8 +54,8 @@ const AdminDashboardPage = () => {
           </h3>
           <div className="space-y-6">
             <div className="space-y-2">
-              <div className="flex justify-between text-xs uppercase tracking-widest">
-                <span className="text-gray-500">Paid & Processing</span>
+              <div className="flex justify-between text-xs uppercase tracking-widest font-bold">
+                <span className="text-gray-300">Paid & Processing</span>
                 <span className="font-bold">{orders?.filter((o: any) => o.isPaid).length || 0}</span>
               </div>
               <div className="h-1 bg-white/5 rounded-full overflow-hidden">
@@ -63,8 +63,8 @@ const AdminDashboardPage = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex justify-between text-xs uppercase tracking-widest">
-                <span className="text-gray-500">Awaiting Payment</span>
+              <div className="flex justify-between text-xs uppercase tracking-widest font-bold">
+                <span className="text-gray-300">Awaiting Payment</span>
                 <span className="font-bold">{pendingOrders}</span>
               </div>
               <div className="h-1 bg-white/5 rounded-full overflow-hidden">
@@ -80,9 +80,9 @@ const AdminDashboardPage = () => {
           </h3>
           <div className="space-y-4">
             {orders?.slice(0, 5).map((order: any) => (
-              <div key={order._id} className="flex justify-between items-center text-[10px] uppercase tracking-widest">
-                <span className="text-gray-500">Order #{order._id.slice(-6)}</span>
-                <span className="font-bold">₦{order.totalPrice.toLocaleString()}</span>
+              <div key={order._id} className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold">
+                <span className="text-gray-300 font-mono">Order #{order._id.slice(-6).toUpperCase()}</span>
+                <span className="font-bold text-white">₦{order.totalPrice.toLocaleString()}</span>
                 <span className={order.isPaid ? 'text-green-500' : 'text-yellow-500'}>
                   {order.isPaid ? 'Paid' : 'Pending'}
                 </span>

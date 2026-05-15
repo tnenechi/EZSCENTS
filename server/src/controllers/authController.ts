@@ -93,6 +93,22 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
     res.json(user);
   } else {
     res.status(404).json({ message: 'User not found' });
+  }
+};
 
+// @desc    Update user password
+// @route   PUT /api/auth/profile/password
+// @access  Private
+export const updateUserPassword = async (req: Request, res: Response): Promise<void> => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user: any = await User.findById(req.session.userId);
+
+  if (user && (await user.matchPassword(currentPassword))) {
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Password updated successfully' });
+  } else {
+    res.status(401).json({ message: 'Invalid current password' });
   }
 };

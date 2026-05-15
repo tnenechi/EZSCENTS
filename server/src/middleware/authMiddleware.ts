@@ -27,6 +27,21 @@ export const protect = async (
   }
 };
 
+export const tryProtect = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  if (req.session && req.session.userId) {
+    try {
+      (req as any).user = await User.findById(req.session.userId).select("-password");
+    } catch (error) {
+      console.error("Optional auth failed:", error);
+    }
+  }
+  next();
+};
+
 export const admin = (
   req: Request,
   res: Response,
