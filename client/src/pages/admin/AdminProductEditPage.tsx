@@ -7,7 +7,6 @@ import {
   Plus,
   Trash2,
   Loader2,
-  Image as ImageIcon,
   ChevronLeft,
   Save,
 } from "lucide-react";

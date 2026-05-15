@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Clock, Eye, Search, Filter, X } from 'lucide-react';
 import { getAllOrders } from '../../services/orderService';
 import AdminLayout from '../../components/layout/AdminLayout';
+import type { Order } from '../../types';
 
 const AdminOrderListPage = () => {
   const [keyword, setKeyword] = useState('');
   const [isPaid, setIsPaid] = useState('');
   const [isDelivered, setIsDelivered] = useState('');
 
-  const { data: orders, isLoading, error, refetch } = useQuery({
+  const { data: orders, isLoading, error } = useQuery<Order[]>({
     queryKey: ['admin-orders', keyword, isPaid, isDelivered],
     queryFn: () => getAllOrders({ keyword, isPaid, isDelivered }),
   });
@@ -112,7 +113,7 @@ const AdminOrderListPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {orders.map((order: any) => (
+              {orders?.map((order) => (
                 <tr key={order._id} className="group hover:bg-white/[0.02] transition-colors">
                   <td className="py-5 pr-4">
                     <span className="text-xs font-mono text-gray-300 font-bold">#{order._id.slice(-6).toUpperCase()}</span>
@@ -130,7 +131,7 @@ const AdminOrderListPage = () => {
                   <td className="py-5 px-4">
                     {order.isPaid ? (
                       <span className="flex items-center gap-1 text-green-500 text-[9px] uppercase font-bold tracking-widest">
-                        <CheckCircle2 size={12} /> {new Date(order.paidAt).toLocaleDateString()}
+                        <CheckCircle2 size={12} /> {order.paidAt ? new Date(order.paidAt).toLocaleDateString() : 'N/A'}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-yellow-500 text-[9px] uppercase font-bold tracking-widest">
@@ -141,7 +142,7 @@ const AdminOrderListPage = () => {
                   <td className="py-5 px-4">
                     {order.isDelivered ? (
                       <span className="flex items-center gap-1 text-premium-gold text-[9px] uppercase font-bold tracking-widest">
-                        <CheckCircle2 size={12} /> {new Date(order.deliveredAt).toLocaleDateString()}
+                        <CheckCircle2 size={12} /> {order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'N/A'}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-gray-400 text-[9px] uppercase font-bold tracking-widest">
@@ -162,7 +163,7 @@ const AdminOrderListPage = () => {
             </tbody>
           </table>
           
-          {orders.length === 0 && (
+          {orders?.length === 0 && (
             <div className="py-20 text-center border border-dashed border-white/10 mt-4">
               <p className="text-gray-400 uppercase tracking-widest text-[10px] font-bold">No orders found in database.</p>
             </div>

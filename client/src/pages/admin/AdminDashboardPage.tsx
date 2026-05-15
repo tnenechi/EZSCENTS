@@ -1,18 +1,29 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ShoppingBag, Package, Tag, TrendingUp, DollarSign } from 'lucide-react';
 import { getAllOrders } from '../../services/orderService';
 import { getProducts } from '../../services/productService';
 import { getActivePromotions } from '../../services/promotionService';
 import AdminLayout from '../../components/layout/AdminLayout';
+import type { Order, Promotion } from '../../types';
 
 const AdminDashboardPage = () => {
-  const { data: orders } = useQuery({ queryKey: ['admin-orders'], queryFn: getAllOrders });
-  const { data: productsData } = useQuery({ queryKey: ['admin-products'], queryFn: () => getProducts() });
-  const { data: promos } = useQuery({ queryKey: ['admin-promos'], queryFn: getActivePromotions });
+  const { data: orders } = useQuery<Order[]>({ 
+    queryKey: ['admin-orders'], 
+    queryFn: () => getAllOrders() 
+  });
+  
+  const { data: productsData } = useQuery({ 
+    queryKey: ['admin-products'], 
+    queryFn: () => getProducts() 
+  });
+  
+  const { data: promos } = useQuery<Promotion[]>({ 
+    queryKey: ['admin-promos'], 
+    queryFn: getActivePromotions 
+  });
 
-  const totalRevenue = orders?.reduce((acc: number, order: any) => order.isPaid ? acc + order.totalPrice : acc, 0) || 0;
-  const pendingOrders = orders?.filter((order: any) => !order.isPaid).length || 0;
+  const totalRevenue = orders?.reduce((acc: number, order: Order) => order.isPaid ? acc + order.totalPrice : acc, 0) || 0;
+  const pendingOrders = orders?.filter((order: Order) => !order.isPaid).length || 0;
 
   const stats = [
     { name: 'Total Revenue', value: `₦${totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-green-500' },

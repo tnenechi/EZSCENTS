@@ -1,13 +1,13 @@
-import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Tag, Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import {  Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import { getActivePromotions, deletePromotion } from '../../services/promotionService';
 import AdminLayout from '../../components/layout/AdminLayout';
+import type { Promotion } from '../../types';
 
 const AdminPromotionListPage = () => {
   const queryClient = useQueryClient();
-  const { data: promos, isLoading, error } = useQuery({
+  const { data: promos, isLoading } = useQuery<Promotion[]>({
     queryKey: ['admin-promos'],
     queryFn: getActivePromotions,
   });
@@ -48,7 +48,7 @@ const AdminPromotionListPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {promos?.map((promo: any) => (
+          {promos?.map((promo) => (
             <div key={promo._id} className="group relative bg-premium-gray/10 border border-white/5 overflow-hidden rounded-sm flex flex-col hover:border-white/20 transition-all">
               <div className="aspect-[16/9] overflow-hidden relative">
                 <img src={promo.image} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
@@ -69,7 +69,7 @@ const AdminPromotionListPage = () => {
                 
                 <div className="flex justify-between items-center pt-4 border-t border-white/5">
                   <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">
-                    {promo.link ? 'Linked to Store' : 'Display Only'}
+                    Display Only
                   </span>
                   <div className="flex gap-2">
                     <Link 
