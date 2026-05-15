@@ -11,10 +11,11 @@ import { protect, admin, tryProtect } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.route("/").post(tryProtect, addOrderItems).get(protect, admin, getOrders);
-router.route("/myorders").get(protect, getMyOrders);
-router.route("/:id").get(getOrderById);
-router.route("/:id/pay").put(protect, updateOrderToPaid);
-router.route("/:id/deliver").put(protect, admin, updateOrderToDelivered);
+router.post("/", tryProtect, addOrderItems);
+router.get("/", protect, admin, getOrders);
+router.get("/myorders", protect, getMyOrders);
+router.get("/:id", getOrderById);
+router.put("/:id/pay", protect, updateOrderToPaid);
+router.put("/:id/deliver", protect, admin, updateOrderToDelivered);
 
 export default router;

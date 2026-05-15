@@ -108,3 +108,48 @@ Admin status is determined during registration. If a user registers with an emai
 -- Add "Add to Wishlist" functionality for registered users
 -- Implement user reviews and ratings for products
 
+
+## PLAN
+
+I've analyzed the 404 issue on Render. The primary suspect is that the server isn't configured to trust Render's proxy. 
+
+  When NODE_ENV is "production", your session cookies are set to secure: true. Behind a proxy like Render's load balancer, Express sees the request as "insecure" HTTP and
+  refuses to send the cookie unless told to trust the proxy. This can lead to auth failures and, in some routing configurations, unexpected 404s.
+
+  I've also noticed that orderRoutes.ts uses the router.route("/") pattern, which can sometimes be ambiguous in Express 5 if there's any path normalization difference
+  between local and production.
+
+  Proposed Plan:
+   1. Trust Proxy: Add app.set('trust proxy', 1); to server/src/index.ts. This is mandatory for production session persistence on platforms like Render.
+   2. Explicit Routing: Refactor orderRoutes.ts to use explicit .get() and .post() methods for better clarity and compatibility.
+
+  I have created a detailed plan in fix-order-404.md. Does this strategy sound good to you? If so, I'll proceed with the implementation.
+
+  Plan: Fix Deployed Route 404s
+
+  The /orders endpoint is returning 404 on Render. This is likely caused by the session middleware failing to persist cookies behind Render's proxy due to missing trust
+  proxy configuration, combined with potential routing ambiguities in Express 5.
+
+  Proposed Changes
+
+  Server
+
+  1. server/src/index.ts
+   - Add app.set('trust proxy', 1); immediately after creating the app instance. This tells Express it is behind a front-facing proxy (Render's load balancer) and should
+     trust the X-Forwarded-* headers, which is essential for secure: true cookies to work.
+
+  2. server/src/routes/orderRoutes.ts
+   - Refactor the routes to use explicit .get() and .post() calls instead of .route("/") to improve clarity and avoid any potential matching issues in Express 5.
+   - Ensure all paths are strictly defined.
+
+  Verification Steps
+
+  Automated Tests
+   - Since this is a deployment-specific issue related to proxies, local unit tests may not reproduce the 404, but we can verify that the routes still work as expected
+     locally.
+   - Run npm run dev in the server directory and verify GET /api/orders (as admin) and GET /api/orders/myorders (as user) return valid responses (even if empty).
+
+  Manual Verification
+   - Deploy the changes to Render.
+   - Verify that the customer order history and admin order list now load correctly without 404 errors.
+   - Check the browser's "Network" tab to ensure cookies are being sent and received with the secure and samesite=none attributes correctly handled by the proxy.
