@@ -45,7 +45,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <Link to="/" className="flex items-center gap-2 text-premium-gold hover:text-white transition-colors uppercase text-[10px] font-bold tracking-[0.3em]">
             <ArrowLeft size={14} /> Back to Store
           </Link>
-          <h1 className="mt-6 text-xl font-bold tracking-tight uppercase">Management</h1>
+          <div className="mt-8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+              <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
+            </div>
+            <h1 className="text-xl font-bold tracking-tight uppercase">Management</h1>
+          </div>
         </div>
 
         <nav className="flex-1 py-8 px-4 space-y-2">

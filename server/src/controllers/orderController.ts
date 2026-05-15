@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
+import User from '../models/User';
 import { sendOrderConfirmation, sendOrderStatusUpdate } from '../services/emailService';
+import mongoose from 'mongoose';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -101,7 +103,48 @@ export const getMyOrders = async (req: Request, res: Response) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 export const getOrders = async (req: Request, res: Response) => {
-  const orders = await Order.find({}).populate('user', 'name email');
+  const { keyword, isPaid, isDelivered } = req.query;
+
+  let query: any = {};
+
+  // Filtering
+  if (isPaid === 'true') query.isPaid = true;
+  if (isPaid === 'false') query.isPaid = false;
+  if (isDelivered === 'true') query.isDelivered = true;
+  if (isDelivered === 'false') query.isDelivered = false;
+
+  // Searching
+  if (keyword) {
+    const searchRegex = new RegExp(keyword as string, 'i');
+
+    // Find users matching name or email
+    const users = await User.find({
+      $or: [{ name: searchRegex }, { email: searchRegex }],
+    }).select('_id');
+    const userIds = users.map((u) => u._id);
+
+    // Build search conditions
+    const searchConditions: any[] = [
+      { 'guestInfo.name': searchRegex },
+      { 'guestInfo.email': searchRegex },
+      { user: { $in: userIds } },
+    ];
+
+    // If keyword looks like an ID
+    if (mongoose.Types.ObjectId.isValid(keyword as string)) {
+      searchConditions.push({ _id: keyword });
+    }
+
+    query = {
+      ...query,
+      $or: searchConditions,
+    };
+  }
+
+  const orders = await Order.find(query)
+    .populate('user', 'name email')
+    .sort({ createdAt: -1 });
+
   res.json(orders);
 };
 

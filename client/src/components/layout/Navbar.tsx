@@ -30,14 +30,16 @@ const Navbar = () => {
   };
 
   const menuVariants = {
-    closed: { x: "-100%", transition: { type: "spring", stiffness: 300, damping: 30 } },
-    open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+    closed: { x: "-100%" as any, transition: { type: "spring" as const, stiffness: 300, damping: 30 } },
+    open: { x: 0, transition: { type: "spring" as const, stiffness: 300, damping: 30 } }
   };
 
   const searchVariants = {
     closed: { opacity: 0, y: -20, pointerEvents: "none" as const },
     open: { opacity: 1, y: 0, pointerEvents: "auto" as const }
   };
+
+  const brandName = import.meta.env.VITE_BRAND_NAME;
 
   return (
     <>
@@ -51,9 +53,14 @@ const Navbar = () => {
           </button>
           <Link
             to="/"
-            className="text-2xl font-bold tracking-widest text-white uppercase"
+            className="flex items-center gap-3 group"
           >
-            EzScents
+            <div className="w-20 h-20 rounded-full overflow-hidden border border-white/10 group-hover:border-premium-gold transition-colors">
+              <img src="/images/logo.jpeg" alt={`${brandName} Logo`} className="w-full h-full object-cover" />
+            </div>
+            <span className="text-2xl font-bold tracking-widest text-white uppercase hidden sm:block">
+              {brandName}
+            </span>
           </Link>
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide uppercase text-gray-400">
             <Link to="/shop" className="hover:text-white transition-colors">
@@ -249,7 +256,7 @@ const Navbar = () => {
 
               <div className="absolute bottom-8 left-8 right-8">
                 <p className="text-[9px] uppercase tracking-widest text-gray-600 font-bold">
-                  EzScents Luxury Fragrances
+                  {import.meta.env.VITE_BRAND_NAME} Luxury Fragrances
                 </p>
               </div>
             </motion.aside>

@@ -34,7 +34,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, showSidebar = true })
       )}
 
       <footer className="border-t border-white/10 py-12 px-6 lg:px-12 text-center text-gray-500 text-sm tracking-widest uppercase">
-        <p>&copy; {new Date().getFullYear()} EzScents Luxury Fragrances. All Rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} {import.meta.env.VITE_BRAND_NAME} Luxury Fragrances. All Rights Reserved.</p>
       </footer>
     </div>
   );

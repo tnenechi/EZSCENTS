@@ -49,8 +49,8 @@ export const getMyOrders = async () => {
 };
 
 // Admin methods
-export const getAllOrders = async () => {
-  const { data } = await api.get('/orders');
+export const getAllOrders = async (params?: { keyword?: string; isPaid?: string; isDelivered?: string }) => {
+  const { data } = await api.get('/orders', { params });
   return data;
 };
 

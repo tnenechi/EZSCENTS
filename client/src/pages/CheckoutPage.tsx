@@ -100,7 +100,7 @@ const CheckoutPage = () => {
           <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">Bank Details</p>
           <p className="font-bold">ZENITH BANK</p>
           <p className="font-bold">1234567890</p>
-          <p className="font-bold text-premium-gold">EZSCENTS INTERNATIONAL LIMITED</p>
+          <p className="font-bold text-premium-gold">{import.meta.env.VITE_BRAND_NAME.toUpperCase()} INTERNATIONAL LIMITED</p>
         </div>
         
         <div className="space-y-2 text-gray-400 leading-relaxed">

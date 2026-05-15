@@ -114,7 +114,7 @@ const LoginPage = () => {
         </form>
 
         <div className="mt-10 pt-10 border-t border-white/5 text-center">
-          <p className="text-gray-500 text-xs mb-4 uppercase tracking-widest">New to EzScents?</p>
+          <p className="text-gray-500 text-xs mb-4 uppercase tracking-widest">New to {import.meta.env.VITE_BRAND_NAME}?</p>
           <Link
             to={`/register?redirect=${redirect}`}
             className="text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-premium-gold transition-colors"
