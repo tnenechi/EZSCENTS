@@ -5,7 +5,6 @@ import {
   ShoppingBag, 
   Package, 
   Tag, 
-  Users, 
   ArrowLeft,
   ChevronRight,
   ShieldCheck
