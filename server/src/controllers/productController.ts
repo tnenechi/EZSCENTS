@@ -22,9 +22,11 @@ export const getProducts = async (req: Request, res: Response) => {
   const category = req.query.category 
     ? { category: { $regex: `^${req.query.category}$`, $options: 'i' } } 
     : {};
+
   const brand = req.query.brand 
     ? { brand: { $regex: `^${req.query.brand}$`, $options: 'i' } } 
     : {};
+    
   const isFeatured = req.query.isFeatured === 'true' ? { isFeatured: true } : {};
 
   let promotionQuery = {};

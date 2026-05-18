@@ -29,6 +29,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "ezscents_secret_key",
     resave: false,
     saveUninitialized: false,
+    proxy: true, // Required for secure cookies behind a proxy
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/ezscents",
       collectionName: "sessions",

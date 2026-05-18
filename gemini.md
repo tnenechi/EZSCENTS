@@ -153,3 +153,7 @@ I've analyzed the 404 issue on Render. The primary suspect is that the server is
    - Deploy the changes to Render.
    - Verify that the customer order history and admin order list now load correctly without 404 errors.
    - Check the browser's "Network" tab to ensure cookies are being sent and received with the secure and samesite=none attributes correctly handled by the proxy.
+
+
+##  TODO
+      - diffrence between protect and tryProtect in authMiddeleware?

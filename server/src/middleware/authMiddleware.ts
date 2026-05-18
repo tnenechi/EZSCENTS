@@ -11,17 +11,19 @@ export const protect = async (
       (req as any).user = await User.findById(req.session.userId).select("-password");
       
       if (!(req as any).user) {
+        console.warn(`[Auth] User not found for ID: ${req.session.userId}`);
         res.status(401).json({ message: "Not authorized, user not found" });
         return;
       }
 
       return next();
     } catch (error) {
-      console.error(error);
+      console.error("[Auth] Session failure:", error);
       res.status(401).json({ message: "Not authorized, session failed" });
       return;
     }
   } else {
+    console.warn(`[Auth] No session or userId. req.session exists: ${!!req.session}, userId exists: ${!!req.session?.userId}`);
     res.status(401).json({ message: "Not authorized, no session" });
     return;
   }
@@ -41,6 +43,7 @@ export const tryProtect = async (
   }
   next();
 };
+
 
 export const admin = (
   req: Request,
