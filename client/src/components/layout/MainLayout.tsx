@@ -36,6 +36,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, showSidebar = true })
       <footer className="border-t border-white/10 py-12 px-6 lg:px-12 text-center text-gray-500 text-sm tracking-widest uppercase">
         <p>&copy; {new Date().getFullYear()} {import.meta.env.VITE_BRAND_NAME} Luxury Fragrances. All Rights Reserved.</p>
       </footer>
+
+      <footer className="border-t border-white/5 py-6 px-6 lg:px-12 text-center text-[10px] text-gray-600 tracking-[0.3em] uppercase bg-black/20">
+        <p>
+          Built by{' '}
+          <a 
+            href="https://thony-enechi.onrender.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-premium-gold hover:text-white transition-colors duration-300 underline underline-offset-4 decoration-premium-gold/30 hover:decoration-premium-gold"
+          >
+            Thony
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };
