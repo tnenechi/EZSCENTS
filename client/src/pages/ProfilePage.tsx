@@ -256,21 +256,21 @@ const ProfilePage = () => {
                               </div>
 
                               <div
-                                className={`flex flex-col items-center gap-3 bg-premium-black px-2 ${order.isDelivered ? "text-premium-gold" : "text-gray-600"}`}
+                                className={`flex flex-col items-center gap-3 bg-premium-black px-2 ${order.isDispatched ? "text-premium-gold" : "text-gray-600"}`}
                               >
                                 <div
-                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isDelivered ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-white/10"}`}
+                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isDispatched ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-white/10"}`}
                                 >
-                                  {order.isDelivered ? (
+                                  {order.isDispatched ? (
                                     <CheckCircle2 size={14} />
                                   ) : (
                                     <Truck size={14} />
                                   )}
                                 </div>
                                 <span
-                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isDelivered ? "text-white" : "text-gray-600"}`}
+                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isDispatched ? "text-white" : "text-gray-600"}`}
                                 >
-                                  Arrived
+                                  Dispatched
                                 </span>
                               </div>
                             </div>

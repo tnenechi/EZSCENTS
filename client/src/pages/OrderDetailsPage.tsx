@@ -8,11 +8,13 @@ import {
   Landmark,
   AlertCircle,
   Loader2,
+  User as UserIcon,
+  Mail,
 } from "lucide-react";
 import {
   getOrderDetails,
   payOrder,
-  updateOrderToDelivered,
+  updateOrderToDispatched,
 } from "../services/orderService";
 import { useAuthStore } from "../store/authStore";
 import MainLayout from "../components/layout/MainLayout";
@@ -32,8 +34,8 @@ const OrderDetailsPage = () => {
     enabled: !!id,
   });
 
-  const deliverMutation = useMutation({
-    mutationFn: () => updateOrderToDelivered(id as string),
+  const dispatchMutation = useMutation({
+    mutationFn: () => updateOrderToDispatched(id as string),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
   });
 
@@ -85,13 +87,13 @@ const OrderDetailsPage = () => {
                   Mark as Paid (Verified)
                 </button>
               )}
-              {order.isPaid && !order.isDelivered && (
+              {order.isPaid && !order.isDispatched && (
                 <button
-                  onClick={() => deliverMutation.mutate()}
-                  disabled={deliverMutation.isPending}
+                  onClick={() => dispatchMutation.mutate()}
+                  disabled={dispatchMutation.isPending}
                   className="bg-white text-black px-8 py-3 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-premium-gold transition-all disabled:opacity-50"
                 >
-                  {deliverMutation.isPending ? (
+                  {dispatchMutation.isPending ? (
                     <Loader2 className="animate-spin" size={14} />
                   ) : (
                     <Truck size={14} />
@@ -99,7 +101,7 @@ const OrderDetailsPage = () => {
                   Mark as Dispatched
                 </button>
               )}
-              {order.isDelivered && (
+              {order.isDispatched && (
                 <div className="text-[10px] text-premium-gold font-bold uppercase tracking-widest flex items-center gap-2">
                   <CheckCircle2 size={14} /> Fulfillment Complete
                 </div>
@@ -159,14 +161,14 @@ const OrderDetailsPage = () => {
                       Payment Verified
                     </p>
                     <p className="text-[10px] text-gray-500">
-                      {order.isPaid
-                        ? "Payment received"
+                      {order.isPaid && order.paidAt
+                        ? new Date(order.paidAt).toLocaleString()
                         : "Awaiting verification"}
                     </p>
                   </div>
                 </div>
                 <div
-                  className={`flex gap-4 ${order.isDelivered ? "opacity-100" : "opacity-30"}`}
+                  className={`flex gap-4 ${order.isDispatched ? "opacity-100" : "opacity-30"}`}
                 >
                   <div className="w-8 h-8 rounded-full bg-premium-gold flex items-center justify-center text-black">
                     <Truck size={16} />
@@ -174,8 +176,8 @@ const OrderDetailsPage = () => {
                   <div>
                     <p className="text-sm font-bold uppercase">Dispatched</p>
                     <p className="text-[10px] text-gray-500">
-                      {order.isDelivered
-                        ? "Out for delivery"
+                      {order.isDispatched && order.dispatchedAt
+                        ? new Date(order.dispatchedAt).toLocaleString()
                         : "Pending dispatch"}
                     </p>
                   </div>
@@ -247,6 +249,29 @@ const OrderDetailsPage = () => {
           </div>
 
           <div className="space-y-8">
+            {/* Customer Information (Admin Only) */}
+            {isAdmin && (
+              <div className="space-y-4 p-6 bg-premium-gold/5 border border-premium-gold/10 rounded-sm">
+                <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold">
+                  Customer Information
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <UserIcon size={16} className="text-premium-gold" />
+                    <p className="text-sm font-bold uppercase tracking-tight">
+                      {order.user?.name || order.guestInfo?.name || "Guest Customer"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail size={16} className="text-premium-gold" />
+                    <p className="text-xs text-gray-300">
+                      {order.user?.email || order.guestInfo?.email || "No email provided"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Order Items */}
             <div className="space-y-6">
               <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold">

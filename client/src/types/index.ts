@@ -75,8 +75,8 @@ export interface Order {
   totalPrice: number;
   isPaid: boolean;
   paidAt?: string;
-  isDelivered: boolean;
-  deliveredAt?: string;
+  isDispatched: boolean;
+  dispatchedAt?: string;
   status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   createdAt: string;
 }

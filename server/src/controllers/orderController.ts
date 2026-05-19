@@ -103,15 +103,21 @@ export const getMyOrders = async (req: Request, res: Response) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 export const getOrders = async (req: Request, res: Response) => {
-  const { keyword, isPaid, isDelivered } = req.query;
+  const { keyword, isPaid, isDispatched, status } = req.query;
 
   let query: any = {};
 
   // Filtering
   if (isPaid === 'true') query.isPaid = true;
   if (isPaid === 'false') query.isPaid = false;
-  if (isDelivered === 'true') query.isDelivered = true;
-  if (isDelivered === 'false') query.isDelivered = false;
+  if (isDispatched === 'true') query.isDispatched = true;
+  if (isDispatched === 'false') query.isDispatched = false;
+  
+  if (status === 'Processing') {
+    query.isDispatched = false;
+  } else if (status) {
+    query.status = status;
+  }
 
   // Searching
   if (keyword) {
@@ -148,16 +154,16 @@ export const getOrders = async (req: Request, res: Response) => {
   res.json(orders);
 };
 
-// @desc    Update order to delivered
+// @desc    Update order to dispatched
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin
 export const updateOrderToDelivered = async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
-    order.isDelivered = true;
-    order.deliveredAt = new Date();
-    order.status = 'Delivered';
+    order.isDispatched = true;
+    order.dispatchedAt = new Date();
+    order.status = 'Shipped';
 
     const updatedOrder = await order.save();
     

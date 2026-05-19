@@ -33,12 +33,12 @@ export const getMyOrders = async (): Promise<Order[]> => {
 };
 
 // Admin methods
-export const getAllOrders = async (params?: { keyword?: string; isPaid?: string; isDelivered?: string }): Promise<Order[]> => {
+export const getAllOrders = async (params?: { keyword?: string; isPaid?: string; isDispatched?: string; status?: string }): Promise<Order[]> => {
   const { data } = await api.get<Order[]>('/orders', { params });
   return data;
 };
 
-export const updateOrderToDelivered = async (id: string): Promise<Order> => {
+export const updateOrderToDispatched = async (id: string): Promise<Order> => {
   const { data } = await api.put<Order>(`/orders/${id}/deliver`);
   return data;
 };

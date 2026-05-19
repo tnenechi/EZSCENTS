@@ -9,17 +9,17 @@ import type { Order } from '../../types';
 const AdminOrderListPage = () => {
   const [keyword, setKeyword] = useState('');
   const [isPaid, setIsPaid] = useState('');
-  const [isDelivered, setIsDelivered] = useState('');
+  const [status, setStatus] = useState('');
 
   const { data: orders, isLoading, error } = useQuery<Order[]>({
-    queryKey: ['admin-orders', keyword, isPaid, isDelivered],
-    queryFn: () => getAllOrders({ keyword, isPaid, isDelivered }),
+    queryKey: ['admin-orders', keyword, isPaid, status],
+    queryFn: () => getAllOrders({ keyword, isPaid, status }),
   });
 
   const clearFilters = () => {
     setKeyword('');
     setIsPaid('');
-    setIsDelivered('');
+    setStatus('');
   };
 
   return (
@@ -57,9 +57,9 @@ const AdminOrderListPage = () => {
             value={isPaid}
             onChange={(e) => setIsPaid(e.target.value)}
           >
-            <option value="">Payment: All</option>
-            <option value="true">Paid</option>
-            <option value="false">Pending</option>
+            <option value="" className="bg-[#111111]">Payment: All</option>
+            <option value="true" className="bg-[#111111]">Paid</option>
+            <option value="false" className="bg-[#111111]">Pending</option>
           </select>
         </div>
 
@@ -67,17 +67,17 @@ const AdminOrderListPage = () => {
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
           <select
             className="w-full bg-white/5 border border-white/10 rounded-sm py-2.5 pl-9 pr-4 text-[10px] uppercase font-bold tracking-widest focus:outline-none focus:border-premium-gold/50 transition-colors appearance-none"
-            value={isDelivered}
-            onChange={(e) => setIsDelivered(e.target.value)}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
           >
-            <option value="">Delivery: All</option>
-            <option value="true">Delivered</option>
-            <option value="false">Processing</option>
+            <option value="" className="bg-[#111111]">Delivery: All</option>
+            <option value="Processing" className="bg-[#111111]">Processing</option>
+            <option value="Shipped" className="bg-[#111111]">Dispatched</option>
           </select>
         </div>
       </div>
 
-      {(keyword || isPaid || isDelivered) && (
+      {(keyword || isPaid || status) && (
         <div className="flex justify-end mb-6">
           <button 
             onClick={clearFilters}
@@ -108,7 +108,7 @@ const AdminOrderListPage = () => {
                 <th className="py-4 px-4">Date</th>
                 <th className="py-4 px-4">Total</th>
                 <th className="py-4 px-4">Paid</th>
-                <th className="py-4 px-4">Delivered</th>
+                <th className="py-4 px-4">Status</th>
                 <th className="py-4 pl-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -140,13 +140,13 @@ const AdminOrderListPage = () => {
                     )}
                   </td>
                   <td className="py-5 px-4">
-                    {order.isDelivered ? (
+                    {order.isDispatched ? (
                       <span className="flex items-center gap-1 text-premium-gold text-[9px] uppercase font-bold tracking-widest">
-                        <CheckCircle2 size={12} /> {order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : 'N/A'}
+                        <CheckCircle2 size={12} /> Dispatched
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-gray-400 text-[9px] uppercase font-bold tracking-widest">
-                        <Clock size={12} /> Processing
+                        <Clock size={12} /> {order.status}
                       </span>
                     )}
                   </td>
