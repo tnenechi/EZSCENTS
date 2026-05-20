@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getActivePromotions } from "../../../services/promotionService";
+import { optimizeImage } from "../../../utils/imageUtils";
 
 const PromotionsSidebar = () => {
   const { data: promos, isLoading } = useQuery({
@@ -36,7 +37,7 @@ const PromotionsSidebar = () => {
             className="group relative overflow-hidden bg-premium-gray aspect-[4/5] rounded-sm"
           >
             <img
-              src={promo.image}
+              src={optimizeImage(promo.image)}
               alt={promo.title}
               className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
             />

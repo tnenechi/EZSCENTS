@@ -12,6 +12,7 @@ import {
 import { getProductById } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import MainLayout from "../components/layout/MainLayout";
+import { optimizeImage } from "../utils/imageUtils";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();

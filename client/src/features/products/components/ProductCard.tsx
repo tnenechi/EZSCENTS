@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Product } from '../../../types';
+import { optimizeImage } from '../../../utils/imageUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -14,7 +15,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
         {product.images && product.images.length > 0 ? (
           <img 
-            src={product.images[0]}
+            src={optimizeImage(product.images[0])}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />

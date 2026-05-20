@@ -18,6 +18,7 @@ import AdminPromotionEditPage from "./pages/admin/AdminPromotionEditPage";
 import AdminSecurityPage from "./pages/admin/AdminSecurityPage";
 import { useAuthStore } from "./store/authStore";
 import { useCartStore } from "./store/cartStore";
+import ScrollToTop from "./components/layout/ScrollToTop";
 
 function App() {
   const userInfo = useAuthStore((state) => state.userInfo);
@@ -37,6 +38,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<CollectionsPage />} />

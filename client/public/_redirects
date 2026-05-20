@@ -1,0 +1,22 @@
+/* Redirects for SPAs */
+/* Standard rule for Render, Netlify, etc. */
+/* All requests that don't match a file will be served index.html */
+/* This allows React Router to handle the routing */
+/* See: https://docs.render.com/deploy-create-react-app#using-client-side-routing */
+
+/* Example rule: /path /index.html 200 */
+/* But since most platforms use the _redirects file format: */
+/* /* /index.html 200 */
+
+/* For Render specifically: */
+/* https://community.render.com/t/how-to-handle-routing-in-react-apps/436/2 */
+
+/* The rule below is the standard for most static hosting providers: */
+/* /index.html 200 */
+
+/* However, Render's static sites often need a specific configuration. */
+/* If this is a static site on Render, we use: */
+/* /* /index.html 200 */
+
+/* /index.html 200 */
+/* /* /index.html 200 */
