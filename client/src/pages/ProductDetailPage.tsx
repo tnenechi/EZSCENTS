@@ -102,7 +102,7 @@ const ProductDetailPage = () => {
           <div className="space-y-4">
             <div className="aspect-[4/5] bg-premium-gray overflow-hidden">
               <img
-                src={product.images[activeImage]}
+                src={optimizeImage(product.images[activeImage])}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -116,7 +116,7 @@ const ProductDetailPage = () => {
                     className={`aspect-square border-2 transition-all ${activeImage === idx ? "border-premium-gold" : "border-transparent"}`}
                   >
                     <img
-                      src={img}
+                      src={optimizeImage(img)}
                       alt=""
                       className="w-full h-full object-cover"
                     />
