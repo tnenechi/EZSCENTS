@@ -8,7 +8,10 @@ import {
   Plus,
   ShieldCheck,
   Truck,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { getProductById } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import MainLayout from "../components/layout/MainLayout";
@@ -34,6 +37,7 @@ const ProductDetailPage = () => {
   );
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   // Set initial variant once data is loaded
   useEffect(() => {
@@ -86,6 +90,13 @@ const ProductDetailPage = () => {
       // Optional: Add a toast or redirect to cart
     }
   };
+
+  const DESCRIPTION_THRESHOLD = 200;
+  const isDescriptionLong = product.description.length > DESCRIPTION_THRESHOLD;
+  const displayDescription =
+    isDescriptionLong && !showFullDescription
+      ? `${product.description.slice(0, DESCRIPTION_THRESHOLD)}...`
+      : product.description;
 
   return (
     <MainLayout showSidebar={false}>
@@ -144,9 +155,34 @@ const ProductDetailPage = () => {
               <h3 className="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-bold">
                 The Fragrance
               </h3>
-              <p className="text-gray-300 leading-relaxed text-sm lg:text-base">
-                {product.description}
-              </p>
+              <div className="relative">
+                <motion.div
+                  initial={false}
+                  animate={{ height: "auto" }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-gray-300 leading-relaxed text-sm lg:text-base whitespace-pre-line">
+                    {displayDescription}
+                  </p>
+                </motion.div>
+
+                {isDescriptionLong && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="mt-4 flex items-center gap-1 text-premium-gold text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors"
+                  >
+                    {showFullDescription ? (
+                      <>
+                        Read Less <ChevronUp size={14} />
+                      </>
+                    ) : (
+                      <>
+                        Read More <ChevronDown size={14} />
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Variant Selection */}
