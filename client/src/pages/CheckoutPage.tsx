@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Loader2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useCartStore } from "../store/cartStore";
 import { useAuthStore } from "../store/authStore";
@@ -22,16 +24,80 @@ const shippingSchema = z.object({
   state: z.string().min(2, "State is required"),
   phone: z.string().min(10, "Enter a valid phone number"),
   guestName: z.string().optional(),
-  guestEmail: z.string().email("Invalid email").optional(),
+  guestEmail: z.string().email("Invalid email").optional().or(z.literal("")),
 });
 
 type ShippingFormValues = z.infer<typeof shippingSchema>;
+
+interface BankTransferInstructionsProps {
+  handleCopy: (text: string) => void;
+  copied: boolean;
+}
+
+const BankTransferInstructions = ({ handleCopy, copied }: BankTransferInstructionsProps) => (
+  <div className="bg-premium-gold/5 border border-premium-gold/20 p-6 space-y-4 animate-fade-in">
+    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-premium-gold">
+      Payment Instructions
+    </h3>
+    <div className="space-y-4 text-xs">
+      <div className="space-y-1">
+        <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">
+          Bank Details
+        </p>
+        <p className="font-bold">{import.meta.env.VITE_BANK_NAME}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-bold">{import.meta.env.VITE_BANK_ACCOUNT}</p>
+          <button
+            onClick={() => handleCopy(import.meta.env.VITE_BANK_ACCOUNT)}
+            className="text-premium-gold hover:text-white transition-colors p-1"
+            title="Copy account number"
+          >
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+          </button>
+          {copied && (
+            <span className="text-[8px] uppercase tracking-widest text-premium-gold animate-pulse">
+              Copied!
+            </span>
+          )}
+        </div>
+        <p className="font-bold text-premium-gold">
+          {import.meta.env.VITE_BRAND_NAME.toUpperCase()} INTERNATIONAL
+          LIMITED
+        </p>
+      </div>
+
+      <div className="space-y-2 text-gray-400 leading-relaxed">
+        <p>
+          Your order will only be processed when payment has been received.
+        </p>
+        <p className="text-red-400/80 italic">
+          Please note: Orders not paid for within 24 hours of purchase will be
+          canceled and invalid.
+        </p>
+      </div>
+
+      <div className="pt-4 border-t border-white/5 space-y-2">
+        <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">
+          After Payment
+        </p>
+        <p>Send proof of payment (screenshot) to customer care via:</p>
+        <p className="font-bold text-premium-gold">
+          {import.meta.env.VITE_WHATSAPP_NUMBER} (WhatsApp)
+        </p>
+        <p className="text-[9px] uppercase tracking-widest text-gray-500 mt-2">
+          Include your full name and order ID
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
 const CheckoutPage = () => {
   const [step, setStep] = useState(1);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [formData, setFormData] = useState<ShippingFormValues | null>(null);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { items, getTotal, clearCart } = useCartStore();
   const { userInfo } = useAuthStore();
@@ -48,6 +114,12 @@ const CheckoutPage = () => {
       guestEmail: userInfo?.email || "",
     },
   });
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const onSubmitShipping = (data: ShippingFormValues) => {
     setFormData(data);
@@ -100,50 +172,6 @@ const CheckoutPage = () => {
     navigate("/cart");
     return null;
   }
-
-  const BankTransferInstructions = () => (
-    <div className="bg-premium-gold/5 border border-premium-gold/20 p-6 space-y-4 animate-fade-in">
-      <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-premium-gold">
-        Payment Instructions
-      </h3>
-      <div className="space-y-4 text-xs">
-        <div className="space-y-1">
-          <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">
-            Bank Details
-          </p>
-          <p className="font-bold">ZENITH BANK</p>
-          <p className="font-bold">1234567890</p>
-          <p className="font-bold text-premium-gold">
-            {import.meta.env.VITE_BRAND_NAME.toUpperCase()} INTERNATIONAL
-            LIMITED
-          </p>
-        </div>
-
-        <div className="space-y-2 text-gray-400 leading-relaxed">
-          <p>
-            Your order will only be processed when payment has been received.
-          </p>
-          <p className="text-red-400/80 italic">
-            Please note: Orders not paid for within 24 hours of purchase will be
-            canceled and invalid.
-          </p>
-        </div>
-
-        <div className="pt-4 border-t border-white/5 space-y-2">
-          <p className="text-gray-500 uppercase text-[9px] font-bold tracking-widest">
-            After Payment
-          </p>
-          <p>Send proof of payment (screenshot) to customer care via:</p>
-          <p className="font-bold text-premium-gold">
-            +234 900 000 0000 (WhatsApp)
-          </p>
-          <p className="text-[9px] uppercase tracking-widest text-gray-500 mt-2">
-            Include your full name and order ID
-          </p>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <MainLayout showSidebar={false}>
@@ -198,6 +226,11 @@ const CheckoutPage = () => {
                           className="w-full bg-premium-gray border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none"
                           placeholder="For guest delivery"
                         />
+                        {errors.guestName && (
+                          <p className="text-red-500 text-[10px] uppercase tracking-widest">
+                            {errors.guestName.message}
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
@@ -208,6 +241,11 @@ const CheckoutPage = () => {
                           className="w-full bg-premium-gray border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none"
                           placeholder="Order updates"
                         />
+                        {errors.guestEmail && (
+                          <p className="text-red-500 text-[10px] uppercase tracking-widest">
+                            {errors.guestEmail.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -215,7 +253,7 @@ const CheckoutPage = () => {
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-                        Street Address
+                        Street Address <span className="text-red-500">*</span>
                       </label>
                       <input
                         {...register("address")}
@@ -231,30 +269,45 @@ const CheckoutPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-                          City
+                          City <span className="text-red-500">*</span>
                         </label>
                         <input
                           {...register("city")}
                           className="w-full bg-premium-gray border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none"
                         />
+                        {errors.city && (
+                          <p className="text-red-500 text-[10px] uppercase tracking-widest">
+                            {errors.city.message}
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-                          State
+                          State <span className="text-red-500">*</span>
                         </label>
                         <input
                           {...register("state")}
                           className="w-full bg-premium-gray border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none"
                         />
+                        {errors.state && (
+                          <p className="text-red-500 text-[10px] uppercase tracking-widest">
+                            {errors.state.message}
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-                          Phone
+                          Phone <span className="text-red-500">*</span>
                         </label>
                         <input
                           {...register("phone")}
                           className="w-full bg-premium-gray border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none"
                         />
+                        {errors.phone && (
+                          <p className="text-red-500 text-[10px] uppercase tracking-widest">
+                            {errors.phone.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -293,7 +346,7 @@ const CheckoutPage = () => {
                       <Landmark size={24} className="text-gray-600" />
                     </div>
 
-                    <BankTransferInstructions />
+                    <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
                   </div>
 
                   <div className="flex gap-4">
@@ -356,7 +409,7 @@ const CheckoutPage = () => {
                     </div>
                   </div>
 
-                  <BankTransferInstructions />
+                  <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
 
                   <button
                     onClick={handleSubmit(onPlaceOrder)}
@@ -390,7 +443,7 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="max-w-md mx-auto">
-                    <BankTransferInstructions />
+                    <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto pt-8">
