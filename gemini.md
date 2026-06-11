@@ -101,12 +101,8 @@ Admin status is determined during registration. If a user registers with an emai
 - **Unified Profile:** Consolidated order history and live tracking into a single "Orders" tab for customers.
 - **Admin Security:** Dedicated security management within the admin dashboard for password changes.
 - **UI/UX:** Improved visual contrast across all admin management interfaces for better accessibility.
+- **Linting:** Resolved core linting errors and improved React state synchronization patterns.
 
-##  TODO
--- Admin order search and filter fix.
--- Implement advanced analytics for admin dashboard (Top selling products, monthly revenue trends)
--- Add "Add to Wishlist" functionality for registered users
--- Implement user reviews and ratings for products
 
 
 ## PLAN

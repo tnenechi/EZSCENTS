@@ -1,9 +1,8 @@
 interface TableSkeletonProps {
   rows?: number;
-  cols?: number;
 }
 
-const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5, cols = 5 }) => {
+const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5 }) => {
   return (
     <div className="space-y-4 w-full">
       {[...Array(rows)].map((_, i) => (

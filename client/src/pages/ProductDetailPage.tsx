@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -38,13 +38,6 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [showFullDescription, setShowFullDescription] = useState(false);
-
-  // Set initial variant once data is loaded
-  useEffect(() => {
-    if (product && product.variants.length > 0 && !selectedVariantId) {
-      setSelectedVariantId(product.variants[0]._id);
-    }
-  }, [product, selectedVariantId]);
 
   if (isLoading)
     return (
@@ -200,7 +193,7 @@ const ProductDetailPage = () => {
                     key={variant._id}
                     onClick={() => setSelectedVariantId(variant._id)}
                     className={`px-6 py-3 text-xs font-bold uppercase tracking-widest transition-all border ${
-                      selectedVariantId === variant._id
+                      (selectedVariantId ?? product.variants[0]._id) === variant._id
                         ? "border-premium-gold text-premium-gold bg-premium-gold/5"
                         : "border-premium-border/20 text-premium-muted hover:border-premium-border/60 hover:text-foreground"
                     }`}
