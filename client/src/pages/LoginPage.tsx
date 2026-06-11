@@ -71,13 +71,13 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">
+            <label className="block text-[10px] uppercase tracking-widest text-premium-muted mb-2 font-bold">
               Email Address
             </label>
             <input
               {...registerField("email")}
               type="email"
-              className={`w-full bg-premium-gray border ${errors.email ? "border-red-500" : "border-white/10"} px-4 py-4 text-white text-sm focus:border-premium-gold outline-none transition-colors`}
+              className={`w-full bg-premium-gray border ${errors.email ? "border-red-500" : "border-premium-border/50"} px-4 py-4 text-foreground text-sm focus:border-premium-gold outline-none transition-colors`}
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -88,19 +88,19 @@ const LoginPage = () => {
           </div>
 
           <div className="relative">
-            <label className="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">
+            <label className="block text-[10px] uppercase tracking-widest text-premium-muted mb-2 font-bold">
               Password
             </label>
             <input
               {...registerField("password")}
               type={showPassword ? "text" : "password"}
-              className={`w-full bg-premium-gray border ${errors.password ? "border-red-500" : "border-white/10"} px-4 py-4 text-white text-sm focus:border-premium-gold outline-none transition-colors`}
+              className={`w-full bg-premium-gray border ${errors.password ? "border-red-500" : "border-premium-border/50"} px-4 py-4 text-foreground text-sm focus:border-premium-gold outline-none transition-colors`}
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-[38px] text-gray-500 hover:text-white transition-colors"
+              className="absolute right-4 top-[38px] text-premium-muted hover:text-foreground transition-colors"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -114,7 +114,7 @@ const LoginPage = () => {
           <div className="flex items-center justify-between">
             <Link
               to="/forgot-password"
-              className="text-[10px] uppercase tracking-widest text-premium-gold hover:text-white transition-colors font-bold"
+              className="text-[10px] uppercase tracking-widest text-premium-gold hover:text-foreground transition-colors font-bold"
             >
               Forgot Password?
             </Link>
@@ -123,7 +123,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-white text-black py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all disabled:opacity-50"
+            className="w-full bg-foreground text-background py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all disabled:opacity-50"
           >
             {isLoading ? (
               <Loader2 className="animate-spin" size={18} />
@@ -134,13 +134,13 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <div className="mt-10 pt-10 border-t border-white/5 text-center">
-          <p className="text-gray-500 text-xs mb-4 uppercase tracking-widest">
+        <div className="mt-10 pt-10 border-t border-premium-border/50 text-center">
+          <p className="text-premium-muted text-xs mb-4 uppercase tracking-widest">
             New to {import.meta.env.VITE_BRAND_NAME}?
           </p>
           <Link
             to={`/register?redirect=${redirect}`}
-            className="text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-premium-gold transition-colors"
+            className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground hover:text-premium-gold transition-colors"
           >
             Create an Account
           </Link>

@@ -19,20 +19,20 @@ const CartPage = () => {
       <MainLayout showSidebar={false}>
         <div className="max-w-4xl mx-auto py-20 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-premium-gray rounded-full flex items-center justify-center text-gray-500">
+            <div className="w-20 h-20 bg-premium-gray rounded-full flex items-center justify-center text-premium-muted">
               <ShoppingBag size={40} />
             </div>
           </div>
           <h1 className="text-3xl font-bold mb-4 uppercase tracking-tight">
             Your Shopping Bag is Empty
           </h1>
-          <p className="text-gray-400 mb-8 max-w-md mx-auto">
+          <p className="text-premium-muted mb-8 max-w-md mx-auto">
             Discover our collection of premium fragrances and find the scent
             that defines you.
           </p>
           <Link
             to="/shop"
-            className="inline-block bg-white text-black px-12 py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold hover:text-black transition-all"
+            className="inline-block bg-foreground text-background px-12 py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold hover:text-black transition-all"
           >
             Start Shopping
           </Link>
@@ -46,7 +46,7 @@ const CartPage = () => {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-12 uppercase text-[10px] font-bold tracking-widest"
+          className="flex items-center gap-2 text-premium-muted hover:text-foreground transition-colors mb-12 uppercase text-[10px] font-bold tracking-widest"
         >
           <ChevronLeft size={16} /> Continue Shopping
         </button>
@@ -61,7 +61,7 @@ const CartPage = () => {
             {items.map((item) => (
               <div
                 key={`${item.product._id}-${item.variant._id}`}
-                className="flex flex-col sm:flex-row gap-6 pb-8 border-b border-white/5"
+                className="flex flex-col sm:flex-row gap-6 pb-8 border-b border-premium-border/50"
               >
                 <div className="w-full sm:w-32 aspect-[4/5] bg-premium-gray overflow-hidden rounded-sm">
                   <img
@@ -80,7 +80,7 @@ const CartPage = () => {
                       <h3 className="text-lg font-bold uppercase tracking-tight mb-1">
                         {item.product.name}
                       </h3>
-                      <p className="text-gray-500 text-xs uppercase tracking-widest">
+                      <p className="text-premium-muted text-xs uppercase tracking-widest">
                         {item.variant.size}
                       </p>
                     </div>
@@ -90,7 +90,7 @@ const CartPage = () => {
                   </div>
 
                   <div className="flex items-center justify-between mt-6">
-                    <div className="flex items-center border border-white/10 px-3 py-1">
+                    <div className="flex items-center border border-premium-border/50 px-3 py-1">
                       <button
                         onClick={() =>
                           updateQuantity(
@@ -99,7 +99,7 @@ const CartPage = () => {
                             Math.max(1, item.quantity - 1),
                           )
                         }
-                        className="text-gray-400 hover:text-white p-1"
+                        className="text-premium-muted hover:text-foreground p-1"
                       >
                         <Minus size={14} />
                       </button>
@@ -114,7 +114,7 @@ const CartPage = () => {
                             item.quantity + 1,
                           )
                         }
-                        className="text-gray-400 hover:text-white p-1"
+                        className="text-premium-muted hover:text-foreground p-1"
                       >
                         <Plus size={14} />
                       </button>
@@ -124,7 +124,7 @@ const CartPage = () => {
                       onClick={() =>
                         removeItem(item.product._id, item.variant._id)
                       }
-                      className="text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"
+                      className="text-premium-muted hover:text-red-500 transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"
                     >
                       <Trash2 size={14} />
                       Remove
@@ -137,27 +137,27 @@ const CartPage = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-premium-gray/30 p-8 border border-white/5">
+            <div className="bg-premium-gray/30 p-8 border border-premium-border/50">
               <h2 className="text-xl font-bold mb-6 uppercase tracking-tight">
                 Order Summary
               </h2>
 
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between text-sm text-gray-400">
+                <div className="flex justify-between text-sm text-premium-muted">
                   <span className="uppercase tracking-widest">Subtotal</span>
-                  <span className="text-white font-bold">
+                  <span className="text-foreground font-bold">
                     ₦{getTotal().toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-400">
+                <div className="flex justify-between text-sm text-premium-muted">
                   <span className="uppercase tracking-widest">Delivery</span>
-                  <span className="text-white font-bold">
+                  <span className="text-foreground font-bold">
                     Calculated at checkout
                   </span>
                 </div>
               </div>
 
-              <div className="border-t border-white/10 pt-6 mb-8">
+              <div className="border-t border-premium-border/50 pt-6 mb-8">
                 <div className="flex justify-between">
                   <span className="text-lg font-bold uppercase tracking-tight">
                     Total
@@ -170,14 +170,14 @@ const CartPage = () => {
 
               <button
                 onClick={() => navigate("/checkout")}
-                className="w-full bg-white text-black py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all"
+                className="w-full bg-foreground text-background py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all"
               >
                 Proceed to Checkout
                 <ArrowRight size={18} />
               </button>
 
               <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-3 text-[10px] text-gray-500 uppercase tracking-widest">
+                <div className="flex items-center gap-3 text-[10px] text-premium-muted uppercase tracking-widest">
                   <div className="w-1 h-1 bg-premium-gold rounded-full" />
                   Free Delivery on orders over ₦50,000
                 </div>
@@ -191,3 +191,4 @@ const CartPage = () => {
 };
 
 export default CartPage;
+

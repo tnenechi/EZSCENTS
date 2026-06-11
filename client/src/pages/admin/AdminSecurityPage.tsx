@@ -48,12 +48,12 @@ const AdminSecurityPage = () => {
       </div>
 
       <div className="max-w-xl">
-        <form onSubmit={handlePasswordChange} className="bg-premium-gray/20 border border-white/5 p-8 rounded-sm space-y-6">
+        <form onSubmit={handlePasswordChange} className="bg-premium-gray p-8 border border-premium-border/30 rounded-sm space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-premium-gold/10 text-premium-gold rounded-sm">
               <Lock size={20} />
             </div>
-            <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-300">Change Administrator Password</h4>
+            <h4 className="text-[10px] uppercase tracking-widest font-bold text-premium-muted">Change Administrator Password</h4>
           </div>
           
           {passwordStatus && (
@@ -66,50 +66,50 @@ const AdminSecurityPage = () => {
           )}
 
           <div className="space-y-2">
-            <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Current Password</label>
+            <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">Current Password</label>
             <input 
               required
               type="password" 
               value={passwordData.currentPassword}
               onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-              className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors" 
+              className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors" 
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">New Password</label>
+            <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">New Password</label>
             <input 
               required
               type="password" 
               value={passwordData.newPassword}
               onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-              className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors" 
+              className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors" 
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Confirm New Password</label>
+            <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">Confirm New Password</label>
             <input 
               required
               type="password" 
               value={passwordData.confirmPassword}
               onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-              className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors" 
+              className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors" 
             />
           </div>
 
           <button 
             type="submit"
             disabled={changePasswordMutation.isPending}
-            className="w-full bg-white text-black py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-premium-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold hover:text-premium-black transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {changePasswordMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : 'Update Password'}
           </button>
         </form>
 
-        <div className="mt-8 p-6 border border-white/5 bg-white/[0.02]">
-          <p className="text-[9px] uppercase tracking-widest text-gray-400 font-bold mb-2">Security Note</p>
-          <p className="text-[10px] text-gray-400 leading-relaxed uppercase tracking-tight font-bold">
+        <div className="mt-8 p-6 border border-premium-border/30 bg-premium-gray">
+          <p className="text-[9px] uppercase tracking-widest text-premium-muted font-bold mb-2">Security Note</p>
+          <p className="text-[10px] text-premium-muted leading-relaxed uppercase tracking-tight font-bold">
             Changing your password will not affect your current session, but you will need to use the new password for future logins. Ensure your new password is secure and contains a mix of characters.
           </p>
         </div>

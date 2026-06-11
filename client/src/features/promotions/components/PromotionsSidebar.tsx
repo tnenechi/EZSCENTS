@@ -26,10 +26,10 @@ const PromotionsSidebar = () => {
 
   if (isLoading) {
     return (
-      <aside className="w-full lg:w-80 space-y-6 animate-pulse">
-        <div className="h-4 w-32 bg-premium-gray" />
+      <aside className="w-full lg:w-80 space-y-6">
+        <div className="skeleton h-4 w-32 bg-premium-gray" />
         <div className="space-y-4">
-          <div className="aspect-[4/5] bg-premium-gray rounded-sm" />
+          <div className="skeleton aspect-[4/5] w-full bg-premium-gray rounded-sm" />
         </div>
       </aside>
     );
@@ -45,7 +45,7 @@ const PromotionsSidebar = () => {
       <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-premium-gold border-l-2 border-premium-gold pl-4">
         Special Offers
       </h3>
-      <div className="relative group overflow-hidden bg-premium-gray aspect-[4/5] rounded-sm">
+      <div className="relative group overflow-hidden bg-premium-gray/50 aspect-[4/5] rounded-sm">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPromo._id}
@@ -65,7 +65,7 @@ const PromotionsSidebar = () => {
                 {currentPromo.title}
               </h4>
               {currentPromo.description && (
-                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-200 text-sm mb-4 line-clamp-2">
                   {currentPromo.description}
                 </p>
               )}

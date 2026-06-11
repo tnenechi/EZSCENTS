@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Plus, Edit, Trash2, Search, ExternalLink } from "lucide-react";
 import { getProducts, deleteProduct } from "../../services/productService";
 import AdminLayout from "../../components/layout/AdminLayout";
+import TableSkeleton from "../../components/common/TableSkeleton";
 import type { Product } from "../../types";
 
 const AdminProductListPage = () => {
@@ -34,7 +35,7 @@ const AdminProductListPage = () => {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-end mb-12 pb-6 border-b border-white/5">
+      <div className="flex justify-between items-end mb-12 pb-6 border-b border-premium-border/30">
         <div>
           <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2 font-bold">
             Inventory Control
@@ -45,7 +46,7 @@ const AdminProductListPage = () => {
         </div>
         <Link
           to="/admin/products/create"
-          className="bg-white text-black px-8 py-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-premium-gold transition-all"
+          className="bg-premium-black text-white px-8 py-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-premium-gold hover:text-premium-black transition-all"
         >
           <Plus size={16} /> New Product
         </Link>
@@ -53,7 +54,7 @@ const AdminProductListPage = () => {
 
       <div className="relative mb-8">
         <Search
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-premium-muted-light"
           size={18}
         />
         <input
@@ -61,21 +62,17 @@ const AdminProductListPage = () => {
           placeholder="Search inventory..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-premium-gray/20 border border-white/5 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors text-white"
+          className="w-full bg-premium-gray border border-premium-border/30 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors text-foreground"
         />
       </div>
 
       {isLoading ? (
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-20 bg-premium-gray/20 rounded-sm" />
-          ))}
-        </div>
+        <TableSkeleton rows={5} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/5 text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+              <tr className="border-b border-premium-border/30 text-[10px] uppercase tracking-widest text-premium-muted-light font-bold">
                 <th className="py-4 pr-4">Image</th>
                 <th className="py-4 px-4">Brand & Name</th>
                 <th className="py-4 px-4">Category</th>
@@ -84,7 +81,7 @@ const AdminProductListPage = () => {
                 <th className="py-4 pl-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-premium-border/10">
               {data?.products.map((product) => {
                 const prices = product.variants.map((v) => v.price);
                 const minPrice = Math.min(...prices);
@@ -93,10 +90,10 @@ const AdminProductListPage = () => {
                 return (
                   <tr
                     key={product._id}
-                    className="group hover:bg-white/[0.02] transition-colors"
+                    className="group hover:bg-premium-gray transition-colors"
                   >
                     <td className="py-5 pr-4">
-                      <div className="w-12 h-16 bg-premium-gray overflow-hidden rounded-sm border border-white/5">
+                      <div className="w-12 h-16 bg-premium-gray overflow-hidden rounded-sm border border-premium-border/20">
                         <img
                           src={product.images[0]}
                           className="w-full h-full object-cover"
@@ -108,21 +105,21 @@ const AdminProductListPage = () => {
                       <p className="text-[10px] uppercase tracking-widest text-premium-gold font-bold mb-1">
                         {product.brand}
                       </p>
-                      <p className="text-xs font-bold uppercase tracking-tight text-white">
+                      <p className="text-xs font-bold uppercase tracking-tight text-foreground">
                         {product.name}
                       </p>
                     </td>
                     <td className="py-5 px-4">
-                      <span className="text-[10px] uppercase text-gray-300 bg-white/5 px-2 py-1 font-bold tracking-widest">
+                      <span className="text-[10px] uppercase text-premium-muted bg-premium-gray px-2 py-1 font-bold tracking-widest">
                         {product.category}
                       </span>
                     </td>
                     <td className="py-5 px-4">
-                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                      <p className="text-[10px] text-premium-muted-light uppercase tracking-widest font-bold">
                         {product.variants.length} Sizes
                       </p>
                     </td>
-                    <td className="py-5 px-4 font-bold text-xs text-white">
+                    <td className="py-5 px-4 font-bold text-xs text-foreground">
                       ₦{minPrice.toLocaleString()}{" "}
                       {maxPrice > minPrice && `- ₦${maxPrice.toLocaleString()}`}
                     </td>
@@ -131,19 +128,19 @@ const AdminProductListPage = () => {
                         <Link
                           to={`/product/${product._id}`}
                           target="_blank"
-                          className="p-2 text-gray-400 hover:text-white transition-colors"
+                          className="p-2 text-premium-muted-light hover:text-foreground transition-colors"
                         >
                           <ExternalLink size={16} />
                         </Link>
                         <Link
                           to={`/admin/products/${product._id}/edit`}
-                          className="p-2 text-gray-400 hover:text-premium-gold transition-colors"
+                          className="p-2 text-premium-muted-light hover:text-premium-gold transition-colors"
                         >
                           <Edit size={16} />
                         </Link>
                         <button
                           onClick={() => handleDelete(product._id)}
-                          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                          className="p-2 text-premium-muted-light hover:text-red-500 transition-colors"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -156,8 +153,8 @@ const AdminProductListPage = () => {
           </table>
 
           {data?.products.length === 0 && (
-            <div className="py-20 text-center border border-dashed border-white/10 mt-4">
-              <p className="text-gray-400 uppercase tracking-widest text-[10px] font-bold">
+            <div className="py-20 text-center border border-dashed border-premium-border/30 mt-4">
+              <p className="text-premium-muted-light uppercase tracking-widest text-[10px] font-bold">
                 No products found in inventory.
               </p>
             </div>

@@ -111,49 +111,29 @@ Admin status is determined during registration. If a user registers with an emai
 
 ## PLAN
 
-I've analyzed the 404 issue on Render. The primary suspect is that the server isn't configured to trust Render's proxy. 
+  Plan: Fix Light Mode Contrast and Theme Consistency
 
-  When NODE_ENV is "production", your session cookies are set to secure: true. Behind a proxy like Render's load balancer, Express sees the request as "insecure" HTTP and
-  refuses to send the cookie unless told to trust the proxy. This can lead to auth failures and, in some routing configurations, unexpected 404s.
+  1. Login & Register Pages
+   * Text: Replace text-white (on inputs and bottom links) with text-foreground.
+   * Labels: Replace text-gray-500 with text-premium-muted.
+   * Borders: Replace border-white/10 with border-premium-border.
 
-  I've also noticed that orderRoutes.ts uses the router.route("/") pattern, which can sometimes be ambiguous in Express 5 if there's any path normalization difference
-  between local and production.
+  2. Cart Page
+   * Text: Replace text-gray-400 and hardcoded text-white labels with text-premium-muted and text-foreground.
+   * Borders: Replace all white/5 and white/10 borders with border-premium-border.
 
-  Proposed Plan:
-   1. Trust Proxy: Add app.set('trust proxy', 1); to server/src/index.ts. This is mandatory for production session persistence on platforms like Render.
-   2. Explicit Routing: Refactor orderRoutes.ts to use explicit .get() and .post() methods for better clarity and compatibility.
+  3. Checkout Page (Most Critical)
+   * Progress Steps: 
+       * Change bg-premium-black to bg-background so the step circles blend with the theme.
+       * Change the connector line from bg-white/10 to bg-premium-border.
+       * Update step labels and icons to use text-premium-muted-light instead of hardcoded grays.
+   * Bank Instructions: Replace all hardcoded grays with theme-aware text classes.
 
-  I have created a detailed plan in fix-order-404.md. Does this strategy sound good to you? If so, I'll proceed with the implementation.
+  4. Order Details Page
+   * Update "Order Journey" timeline and customer info sections to use theme-aware text and borders.
 
-  Plan: Fix Deployed Route 404s
+  Verification:
+   * Toggle theme and verify legibility on /login, /register, /cart, /checkout, and /order/:id.
 
-  The /orders endpoint is returning 404 on Render. This is likely caused by the session middleware failing to persist cookies behind Render's proxy due to missing trust
-  proxy configuration, combined with potential routing ambiguities in Express 5.
-
-  Proposed Changes
-
-  Server
-
-  1. server/src/index.ts
-   - Add app.set('trust proxy', 1); immediately after creating the app instance. This tells Express it is behind a front-facing proxy (Render's load balancer) and should
-     trust the X-Forwarded-* headers, which is essential for secure: true cookies to work.
-
-  2. server/src/routes/orderRoutes.ts
-   - Refactor the routes to use explicit .get() and .post() calls instead of .route("/") to improve clarity and avoid any potential matching issues in Express 5.
-   - Ensure all paths are strictly defined.
-
-  Verification Steps
-
-  Automated Tests
-   - Since this is a deployment-specific issue related to proxies, local unit tests may not reproduce the 404, but we can verify that the routes still work as expected
-     locally.
-   - Run npm run dev in the server directory and verify GET /api/orders (as admin) and GET /api/orders/myorders (as user) return valid responses (even if empty).
-
-  Manual Verification
-   - Deploy the changes to Render.
-   - Verify that the customer order history and admin order list now load correctly without 404 errors.
-   - Check the browser's "Network" tab to ensure cookies are being sent and received with the secure and samesite=none attributes correctly handled by the proxy.
-
-
-##  TODO
-      - diffrence between protect and tryProtect in authMiddeleware?
+  Does this approach cover everything you noticed? If so, I'll proceed with the implementation.
+  

@@ -18,11 +18,18 @@ import AdminPromotionEditPage from "./pages/admin/AdminPromotionEditPage";
 import AdminSecurityPage from "./pages/admin/AdminSecurityPage";
 import { useAuthStore } from "./store/authStore";
 import { useCartStore } from "./store/cartStore";
+import { useThemeStore } from "./store/themeStore";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
 function App() {
   const userInfo = useAuthStore((state) => state.userInfo);
   const setItems = useCartStore((state) => state.setItems);
+  const theme = useThemeStore((state) => state.theme);
+
+  useEffect(() => {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+  }, [theme]);
 
   useEffect(() => {
     const cartKey = userInfo ? `cart_${userInfo._id}` : 'cart_guest';

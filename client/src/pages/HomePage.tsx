@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getProducts } from "../services/productService";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../features/products/components/ProductCard";
+import ProductCardSkeleton from "../features/products/components/ProductCardSkeleton";
 
 const HomePage = () => {
   const { data, isLoading, error } = useQuery({
@@ -17,13 +18,14 @@ const HomePage = () => {
           <img
             src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80"
             alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
+            className="absolute inset-0 w-full h-full object-cover opacity-85 dark:opacity-50"
           />
+          <div className="absolute inset-0 bg-black/20 dark:bg-transparent z-0" />
           <div className="relative text-center z-10 px-4">
-            <h2 className="text-sm uppercase tracking-[0.4em] text-premium-gold mb-4 animate-fade-in">
+            <h2 className="text-sm uppercase tracking-[0.4em] text-premium-gold mb-4 animate-fade-in font-bold">
               Signature Scents
             </h2>
-            <h1 className="text-5xl lg:text-7xl font-bold mb-8 tracking-tighter uppercase">
+            <h1 className="text-5xl lg:text-7xl font-bold mb-8 tracking-tighter uppercase text-white">
               Define Your Presence
             </h1>
             <Link 
@@ -37,10 +39,10 @@ const HomePage = () => {
 
         <section className="px-6 lg:px-12 pb-24">
           <div className="flex flex-col items-center text-center mb-16">
-            <h2 className="text-xs uppercase tracking-[0.3em] text-premium-gold mb-3">
+            <h2 className="text-xs uppercase tracking-[0.3em] text-premium-gold mb-3 font-bold">
               Curated Selection
             </h2>
-            <h3 className="text-4xl font-bold tracking-tight uppercase">
+            <h3 className="text-4xl font-bold tracking-tight uppercase text-foreground">
               Featured Fragrances
             </h3>
             <div className="w-12 h-[1px] bg-premium-gold mt-6" />
@@ -49,16 +51,12 @@ const HomePage = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[4/5] bg-premium-gray mb-4" />
-                  <div className="h-2 w-20 bg-premium-gray mb-2" />
-                  <div className="h-4 w-40 bg-premium-gray" />
-                </div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : error ? (
             <div className="text-center py-20">
-              <p className="text-gray-400 uppercase tracking-widest text-xs">
+              <p className="text-premium-muted uppercase tracking-widest text-xs font-bold">
                 Failed to load featured products.
               </p>
             </div>
@@ -73,7 +71,7 @@ const HomePage = () => {
           <div className="mt-20 text-center">
             <Link 
               to="/shop"
-              className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-premium-gold transition-colors border-b border-gray-800 pb-2 hover:border-premium-gold"
+              className="text-[10px] font-bold uppercase tracking-[0.3em] text-premium-muted hover:text-premium-gold transition-colors border-b border-premium-border pb-2 hover:border-premium-gold"
             >
               View Full Collection
             </Link>

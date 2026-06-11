@@ -12,6 +12,7 @@ import {
   X
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import ThemeToggle from '../common/ThemeToggle';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -40,21 +41,24 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   if (!userInfo || userInfo.role !== 'admin') return null;
 
   return (
-    <div className="min-h-screen bg-premium-black text-white flex flex-col md:flex-row">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row transition-colors duration-300">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between p-4 border-b border-white/5 sticky top-0 bg-premium-black z-50">
+      <header className="md:hidden flex items-center justify-between p-4 border-b border-premium-border/10 sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-premium-border/10">
             <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-lg font-bold tracking-tight uppercase">Management</h1>
         </div>
-        <button 
-          onClick={() => setIsSidebarOpen(true)}
-          className="p-2 text-gray-400 hover:text-white transition-colors"
-        >
-          <Menu size={24} />
-        </button>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 text-premium-muted hover:text-foreground transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
       </header>
 
       {/* Overlay for mobile */}
@@ -67,14 +71,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
       {/* Admin Sidebar */}
       <aside className={`
-        fixed md:sticky top-0 left-0 h-screen w-64 border-r border-white/5 bg-premium-gray/20 flex flex-col z-[60]
+        fixed md:sticky top-0 left-0 h-screen w-64 border-r border-premium-border/10 bg-premium-gray flex flex-col z-[60]
         transition-transform duration-300 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-8 border-b border-white/5 relative">
+        <div className="p-8 border-b border-premium-border/10 relative">
           <button 
             onClick={() => setIsSidebarOpen(false)}
-            className="md:hidden absolute right-4 top-4 p-2 text-gray-400 hover:text-white transition-colors"
+            className="md:hidden absolute right-4 top-4 p-2 text-premium-muted hover:text-foreground transition-colors"
           >
             <X size={20} />
           </button>
@@ -82,15 +86,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <Link 
             to="/" 
             onClick={() => setIsSidebarOpen(false)}
-            className="flex items-center gap-2 text-premium-gold hover:text-white transition-colors uppercase text-[10px] font-bold tracking-[0.3em]"
+            className="flex items-center gap-2 text-premium-gold hover:text-foreground transition-colors uppercase text-[10px] font-bold tracking-[0.3em]"
           >
             <ArrowLeft size={14} /> Back to Store
           </Link>
           <div className="mt-8 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-premium-border/10">
               <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight uppercase">Management</h1>
+            <h1 className="text-xl font-bold tracking-tight uppercase text-foreground">Management</h1>
           </div>
         </div>
 
@@ -105,8 +109,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center justify-between p-4 text-[10px] font-bold uppercase tracking-widest transition-all rounded-sm ${
                   isActive 
-                    ? 'bg-premium-gold text-black' 
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-premium-gold text-premium-black' 
+                    : 'text-premium-muted hover:text-foreground hover:bg-premium-border/10'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -119,14 +123,19 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           })}
         </nav>
 
-        <div className="p-8 border-t border-white/5">
-          <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 font-bold">Signed in as</p>
-          <p className="text-xs font-bold truncate text-white">{userInfo.name}</p>
+        <div className="p-8 border-t border-premium-border/10 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] text-premium-muted uppercase tracking-widest mb-1 font-bold">Signed in as</p>
+            <p className="text-xs font-bold truncate text-foreground">{userInfo.name}</p>
+          </div>
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-premium-black admin-content">
+      <main className="flex-1 overflow-y-auto bg-background admin-content">
         <div className="p-6 md:p-12 max-w-7xl mx-auto">
           {children}
         </div>

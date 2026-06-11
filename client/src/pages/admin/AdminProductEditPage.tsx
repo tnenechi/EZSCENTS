@@ -155,7 +155,7 @@ const AdminProductEditPage = () => {
   if (isLoading)
     return (
       <AdminLayout>
-        <div className="animate-pulse py-20 text-center text-gray-400 uppercase tracking-widest font-bold">
+        <div className="animate-pulse py-20 text-center text-premium-muted uppercase tracking-widest font-bold">
           Loading Product...
         </div>
       </AdminLayout>
@@ -166,7 +166,7 @@ const AdminProductEditPage = () => {
       <div className="flex justify-between items-center mb-12">
         <button
           onClick={() => navigate("/admin/products")}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest"
+          className="flex items-center gap-2 text-premium-muted-light hover:text-foreground transition-colors uppercase text-[10px] font-bold tracking-widest"
         >
           <ChevronLeft size={16} /> Back to Inventory
         </button>
@@ -181,19 +181,19 @@ const AdminProductEditPage = () => {
       >
         <div className="lg:col-span-2 space-y-8">
           {/* Basic Info */}
-          <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
+          <section className="bg-premium-gray p-8 border border-premium-border/30 space-y-6">
             <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">
               General Information
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                <label className="text-[10px] uppercase tracking-widest text-premium-muted font-bold">
                   Product Name
                 </label>
                 <input
                   {...register("name")}
-                  className="w-full bg-premium-black border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-white"
+                  className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-foreground"
                   placeholder="e.g. Royal Oud"
                 />
                 {errors.name && (
@@ -203,12 +203,12 @@ const AdminProductEditPage = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                <label className="text-[10px] uppercase tracking-widest text-premium-muted font-bold">
                   Brand
                 </label>
                 <input
                   {...register("brand")}
-                  className="w-full bg-premium-black border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-white"
+                  className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-foreground"
                   placeholder="e.g. Creed"
                 />
                 {errors.brand && (
@@ -220,13 +220,13 @@ const AdminProductEditPage = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+              <label className="text-[10px] uppercase tracking-widest text-premium-muted font-bold">
                 Description
               </label>
               <textarea
                 {...register("description")}
                 rows={5}
-                className="w-full bg-premium-black border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-white"
+                className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all text-foreground"
                 placeholder="Tell the story of this scent..."
               />
               {errors.description && (
@@ -238,12 +238,12 @@ const AdminProductEditPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                <label className="text-[10px] uppercase tracking-widest text-premium-muted font-bold">
                   Category
                 </label>
                 <select
                   {...register("category")}
-                  className="w-full bg-premium-black border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all appearance-none text-white"
+                  className="w-full bg-background border border-premium-border/40 px-4 py-3 text-sm focus:border-premium-gold outline-none transition-all appearance-none text-foreground"
                 >
                   <option value="Men">Men</option>
                   <option value="Women">Women</option>
@@ -260,7 +260,7 @@ const AdminProductEditPage = () => {
                 />
                 <label
                   htmlFor="isFeatured"
-                  className="text-[10px] uppercase tracking-widest text-gray-300 font-bold"
+                  className="text-[10px] uppercase tracking-widest text-premium-muted font-bold"
                 >
                   Featured in Home Page
                 </label>
@@ -269,7 +269,7 @@ const AdminProductEditPage = () => {
           </section>
 
           {/* Variants */}
-          <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
+          <section className="bg-premium-gray p-8 border border-premium-border/30 space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">
                 Sizes & Pricing
@@ -277,7 +277,7 @@ const AdminProductEditPage = () => {
               <button
                 type="button"
                 onClick={() => append({ size: "", price: 0, stock: 0 })}
-                className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1 hover:text-premium-gold transition-colors text-premium-gold"
+                className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1 hover:text-foreground transition-colors text-premium-gold"
               >
                 <Plus size={14} /> Add Size
               </button>
@@ -287,19 +287,19 @@ const AdminProductEditPage = () => {
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-premium-black/40 p-4 rounded-sm border border-white/5"
+                  className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-background p-4 rounded-sm border border-premium-border/20"
                 >
                   <div className="space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                    <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                       Size (e.g. 100ml)
                     </label>
                     <input
                       {...register(`variants.${index}.size`)}
-                      className="w-full bg-premium-black border border-white/5 px-3 py-2 text-xs focus:border-premium-gold outline-none text-white"
+                      className="w-full bg-background border border-premium-border/40 px-3 py-2 text-xs focus:border-premium-gold outline-none text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                    <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                       Price (₦)
                     </label>
                     <input
@@ -307,11 +307,11 @@ const AdminProductEditPage = () => {
                       {...register(`variants.${index}.price`, {
                         valueAsNumber: true,
                       })}
-                      className="w-full bg-premium-black border border-white/5 px-3 py-2 text-xs focus:border-premium-gold outline-none text-white"
+                      className="w-full bg-background border border-premium-border/40 px-3 py-2 text-xs focus:border-premium-gold outline-none text-foreground"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                    <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                       Stock
                     </label>
                     <input
@@ -319,14 +319,14 @@ const AdminProductEditPage = () => {
                       {...register(`variants.${index}.stock`, {
                         valueAsNumber: true,
                       })}
-                      className="w-full bg-premium-black border border-white/5 px-3 py-2 text-xs focus:border-premium-gold outline-none text-white"
+                      className="w-full bg-background border border-premium-border/40 px-3 py-2 text-xs focus:border-premium-gold outline-none text-foreground"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="p-2.5 text-white hover:text-red-500 transition-colors"
+                    className="p-2.5 text-foreground hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -343,7 +343,7 @@ const AdminProductEditPage = () => {
 
         {/* Sidebar: Images & Save */}
         <div className="space-y-8">
-          <section className="bg-premium-gray/10 p-8 border border-white/5 space-y-6">
+          <section className="bg-premium-gray p-8 border border-premium-border/30 space-y-6">
             <h2 className="text-[10px] uppercase tracking-widest font-bold text-premium-gold border-l-2 border-premium-gold pl-4">
               Media
             </h2>
@@ -352,7 +352,7 @@ const AdminProductEditPage = () => {
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative aspect-square bg-premium-black overflow-hidden group"
+                  className="relative aspect-square bg-background border border-premium-border/20 overflow-hidden group"
                 >
                   <img src={img} className="w-full h-full object-cover" />
                   <button
@@ -361,20 +361,20 @@ const AdminProductEditPage = () => {
                     }
                     className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={20} className="text-white" />
                   </button>
                 </div>
               ))}
-              <label className="aspect-square border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-premium-gold hover:bg-white/5 transition-all">
+              <label className="aspect-square border-2 border-dashed border-premium-border/20 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-premium-gold hover:bg-background transition-all">
                 {isUploading ? (
                   <Loader2
                     className="animate-spin text-premium-gold"
                     size={20}
                   />
                 ) : (
-                  <Plus size={24} className="text-gray-400" />
+                  <Plus size={24} className="text-premium-muted-light" />
                 )}
-                <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">
+                <span className="text-[9px] uppercase font-bold tracking-widest text-premium-muted-light">
                   Add Image
                 </span>
                 <input
@@ -387,7 +387,7 @@ const AdminProductEditPage = () => {
               </label>
             </div>
             {images.length === 0 && (
-              <p className="text-[9px] uppercase text-gray-400 font-bold text-center">
+              <p className="text-[9px] uppercase text-premium-muted-light font-bold text-center">
                 No images uploaded yet
               </p>
             )}
@@ -397,7 +397,7 @@ const AdminProductEditPage = () => {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full bg-white text-black py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-black transition-all disabled:opacity-50"
+              className="w-full bg-premium-black text-white py-5 text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-premium-gold hover:text-premium-black transition-all disabled:opacity-50"
             >
               {isSaving ? (
                 <Loader2 className="animate-spin" size={18} />
@@ -409,7 +409,7 @@ const AdminProductEditPage = () => {
             <button
               type="button"
               onClick={() => navigate("/admin/products")}
-              className="w-full bg-transparent border border-white/10 text-gray-400 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all font-bold"
+              className="w-full bg-transparent border border-premium-border/30 text-premium-muted py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-background transition-all font-bold"
             >
               Cancel
             </button>

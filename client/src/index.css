@@ -2,36 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  background-color: #0A0A0A;
-  color: #FFFFFF;
-}
+@layer base {
+  :root {
+    --background: #FCFBF7;
+    --foreground: #0A0A0A;
+    --premium-black: #0A0A0A;
+    --premium-gray: #F0EEE6;
+    --premium-gold: #D4AF37;
+    --premium-accent: #B8860B;
+    --premium-muted: #222222;
+    --premium-muted-light: #444444;
+    --premium-border: #E5E1D1;
 
-body {
-  margin: 0;
-  min-height: 100vh;
+    color-scheme: light;
+  }
+
+  .dark {
+    --background: #0A0A0A;
+    --foreground: #FFFFFF;
+    --premium-black: #0A0A0A;
+    --premium-gray: #1A1A1A;
+    --premium-gold: #D4AF37;
+    --premium-accent: #B8860B;
+    --premium-muted: #999999;
+    --premium-muted-light: #666666;
+    --premium-border: #2A2A2A;
+
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
 }
 
 /* Admin UI Global Enhancements */
 .admin-content input:not([type="checkbox"]),
 .admin-content select,
 .admin-content textarea {
-  @apply border-white/40 focus:border-premium-gold !important;
+  @apply border-premium-border focus:border-premium-gold bg-background text-foreground !important;
 }
 
 .admin-content table {
-  @apply border-collapse border border-white/10 !important;
+  @apply border-collapse border border-premium-border !important;
 }
 
 .admin-content th,
 .admin-content td {
-  @apply border border-white/5 !important;
+  border: 1px solid color-mix(in srgb, var(--premium-border), transparent 50%) !important;
 }
 
-.admin-content section {
-  @apply border-white/20 !important;
+.admin-content section,
+.admin-content div[class*="bg-premium-gray/20"],
+.admin-content div[class*="bg-premium-gray/10"] {
+  border-color: color-mix(in srgb, var(--premium-border), transparent 60%) !important;
+}
+
+.skeleton {
+  background-color: color-mix(in srgb, var(--premium-gray), transparent 50%) !important;
 }

@@ -80,14 +80,14 @@ const ProfilePage = () => {
         <div className="flex flex-col md:flex-row gap-12">
           {/* Profile Sidebar */}
           <div className="w-full md:w-64 shrink-0">
-            <div className="bg-premium-gray/20 border border-white/5 p-8 rounded-sm mb-8">
+            <div className="bg-premium-gray/20 border border-premium-border/10 p-8 rounded-sm mb-8">
               <div className="w-16 h-16 bg-premium-gold/10 border border-premium-gold/20 rounded-full flex items-center justify-center text-premium-gold mb-4 mx-auto md:mx-0">
                 <UserIcon size={32} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight uppercase mb-1 text-white">
+              <h1 className="text-xl font-bold tracking-tight uppercase mb-1 text-foreground">
                 {userInfo?.name}
               </h1>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+              <p className="text-[10px] text-premium-muted uppercase tracking-widest font-bold">
                 {userInfo?.email}
               </p>
             </div>
@@ -99,8 +99,8 @@ const ProfilePage = () => {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`w-full flex items-center justify-between p-4 text-[10px] font-bold uppercase tracking-widest transition-all rounded-sm ${
                     activeTab === tab.id
-                      ? "bg-premium-gold text-black"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                      ? "bg-premium-gold text-premium-black"
+                      : "text-premium-muted hover:text-foreground hover:bg-premium-border/10"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ const ProfilePage = () => {
                       <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2 font-bold">
                         Account
                       </h2>
-                      <h3 className="text-3xl font-bold uppercase tracking-tight text-white">
+                      <h3 className="text-3xl font-bold uppercase tracking-tight text-foreground">
                         Your Orders
                       </h3>
                     </div>
@@ -141,17 +141,17 @@ const ProfilePage = () => {
                         className="animate-spin text-premium-gold"
                         size={32}
                       />
-                      <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400">
+                      <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-premium-muted">
                         Loading your orders...
                       </p>
                     </div>
                   ) : orders?.length === 0 ? (
-                    <div className="text-center py-20 border border-white/5 bg-premium-gray/10 rounded-sm">
+                    <div className="text-center py-20 border border-premium-border/20 bg-premium-gray/10 rounded-sm">
                       <ShoppingBag
-                        className="mx-auto text-gray-600 mb-4"
+                        className="mx-auto text-premium-muted-light mb-4"
                         size={48}
                       />
-                      <p className="text-gray-400 uppercase text-[10px] tracking-widest font-bold">
+                      <p className="text-premium-muted uppercase text-[10px] tracking-widest font-bold">
                         No orders found yet
                       </p>
                       <Link
@@ -166,14 +166,14 @@ const ProfilePage = () => {
                       {orders?.map((order: any) => (
                         <div
                           key={order._id}
-                          className="bg-premium-gray/10 border border-white/5 p-8 hover:border-premium-gold/30 transition-colors rounded-sm group"
+                          className="bg-premium-gray/10 border border-premium-border/10 p-8 hover:border-premium-gold/30 transition-colors rounded-sm group"
                         >
                           <div className="flex flex-wrap justify-between items-center gap-6 mb-8">
                             <div className="space-y-1">
-                              <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+                              <p className="text-[10px] text-premium-muted uppercase font-bold tracking-widest">
                                 Order ID: #{order._id.slice(-6).toUpperCase()}
                               </p>
-                              <p className="text-sm font-bold text-white">
+                              <p className="text-sm font-bold text-foreground">
                                 {new Date(order.createdAt).toLocaleDateString()}{" "}
                                 — ₦{order.totalPrice.toLocaleString()}
                               </p>
@@ -195,7 +195,7 @@ const ProfilePage = () => {
                               </div>
                               <Link
                                 to={`/order/${order._id}`}
-                                className="text-premium-gold hover:text-white transition-colors flex items-center gap-2 text-[9px] uppercase font-bold tracking-widest group-hover:translate-x-1 transition-transform"
+                                className="text-premium-gold hover:text-foreground transition-colors flex items-center gap-2 text-[9px] uppercase font-bold tracking-widest group-hover:translate-x-1 transition-transform"
                               >
                                 Details <ChevronRight size={16} />
                               </Link>
@@ -203,11 +203,11 @@ const ProfilePage = () => {
                           </div>
 
                           {/* Item Preview */}
-                          <div className="flex gap-4 overflow-x-auto pb-6 border-b border-white/5 mb-8">
+                          <div className="flex gap-4 overflow-x-auto pb-6 border-b border-premium-border/10 mb-8">
                             {order.orderItems.map((item: any, idx: number) => (
                               <div
                                 key={idx}
-                                className="w-14 h-14 bg-premium-gray shrink-0 border border-white/5 rounded-sm overflow-hidden"
+                                className="w-14 h-14 bg-premium-gray shrink-0 border border-premium-border/10 rounded-sm overflow-hidden"
                               >
                                 <img
                                   src={item.image}
@@ -225,22 +225,22 @@ const ProfilePage = () => {
                               Tracking Status
                             </p>
                             <div className="relative flex justify-between px-4 max-w-lg">
-                              <div className="absolute top-[14px] left-0 w-full h-[1px] bg-white/10 -z-10" />
+                              <div className="absolute top-[14px] left-0 w-full h-[1px] bg-premium-border/30 -z-10" />
 
-                              <div className="flex flex-col items-center gap-3 bg-premium-black px-2">
+                              <div className="flex flex-col items-center gap-3 bg-background px-2">
                                 <div className="w-7 h-7 rounded-full border border-premium-gold flex items-center justify-center text-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]">
                                   <CheckCircle2 size={14} />
                                 </div>
-                                <span className="text-[8px] uppercase tracking-widest font-bold text-white">
+                                <span className="text-[8px] uppercase tracking-widest font-bold text-foreground">
                                   Placed
                                 </span>
                               </div>
 
                               <div
-                                className={`flex flex-col items-center gap-3 bg-premium-black px-2 ${order.isPaid ? "text-premium-gold" : "text-gray-600"}`}
+                                className={`flex flex-col items-center gap-3 bg-background px-2 ${order.isPaid ? "text-premium-gold" : "text-premium-muted-light"}`}
                               >
                                 <div
-                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isPaid ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-white/10"}`}
+                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isPaid ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-premium-border"}`}
                                 >
                                   {order.isPaid ? (
                                     <CheckCircle2 size={14} />
@@ -249,17 +249,17 @@ const ProfilePage = () => {
                                   )}
                                 </div>
                                 <span
-                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isPaid ? "text-white" : "text-gray-600"}`}
+                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isPaid ? "text-foreground" : "text-premium-muted-light"}`}
                                 >
                                   Paid
                                 </span>
                               </div>
 
                               <div
-                                className={`flex flex-col items-center gap-3 bg-premium-black px-2 ${order.isDispatched ? "text-premium-gold" : "text-gray-600"}`}
+                                className={`flex flex-col items-center gap-3 bg-background px-2 ${order.isDispatched ? "text-premium-gold" : "text-premium-muted-light"}`}
                               >
                                 <div
-                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isDispatched ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-white/10"}`}
+                                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${order.isDispatched ? "border-premium-gold bg-premium-gold/5 shadow-[0_0_10px_rgba(212,175,55,0.1)]" : "border-premium-border"}`}
                                 >
                                   {order.isDispatched ? (
                                     <CheckCircle2 size={14} />
@@ -268,7 +268,7 @@ const ProfilePage = () => {
                                   )}
                                 </div>
                                 <span
-                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isDispatched ? "text-white" : "text-gray-600"}`}
+                                  className={`text-[8px] uppercase tracking-widest font-bold ${order.isDispatched ? "text-foreground" : "text-premium-muted-light"}`}
                                 >
                                   Dispatched
                                 </span>
@@ -294,16 +294,16 @@ const ProfilePage = () => {
                     <h2 className="text-[10px] uppercase tracking-[0.4em] text-premium-gold mb-2 font-bold">
                       Protection
                     </h2>
-                    <h3 className="text-3xl font-bold uppercase tracking-tight text-white">
+                    <h3 className="text-3xl font-bold uppercase tracking-tight text-foreground">
                       Security Settings
                     </h3>
                   </div>
 
                   <form
                     onSubmit={handlePasswordChange}
-                    className="bg-premium-gray/20 border border-white/5 p-8 rounded-sm space-y-6 max-w-xl"
+                    className="bg-premium-gray/10 border border-premium-border/10 p-8 rounded-sm space-y-6 max-w-xl"
                   >
-                    <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-2">
+                    <h4 className="text-[10px] uppercase tracking-widest font-bold text-premium-muted mb-2">
                       Change Password
                     </h4>
 
@@ -325,7 +325,7 @@ const ProfilePage = () => {
                     )}
 
                     <div className="space-y-2">
-                      <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                      <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                         Current Password
                       </label>
                       <input
@@ -338,12 +338,12 @@ const ProfilePage = () => {
                             currentPassword: e.target.value,
                           })
                         }
-                        className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors"
+                        className="w-full bg-premium-gray border border-premium-border/50 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                      <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                         New Password
                       </label>
                       <input
@@ -356,12 +356,12 @@ const ProfilePage = () => {
                             newPassword: e.target.value,
                           })
                         }
-                        className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors"
+                        className="w-full bg-premium-gray border border-premium-border/50 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                      <label className="text-[9px] uppercase tracking-widest text-premium-muted font-bold">
                         Confirm New Password
                       </label>
                       <input
@@ -374,14 +374,14 @@ const ProfilePage = () => {
                             confirmPassword: e.target.value,
                           })
                         }
-                        className="w-full bg-black/50 border border-white/10 px-4 py-3 text-sm focus:border-premium-gold outline-none text-white transition-colors"
+                        className="w-full bg-premium-gray border border-premium-border/50 px-4 py-3 text-sm focus:border-premium-gold outline-none text-foreground transition-colors"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={changePasswordMutation.isPending}
-                      className="w-full bg-white text-black py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full bg-foreground text-background py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-premium-gold hover:text-black transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {changePasswordMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
