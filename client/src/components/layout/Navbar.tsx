@@ -56,7 +56,7 @@ const Navbar = () => {
             to="/"
             className="flex items-center gap-3 group"
           >
-            <div className="w-20 h-20 rounded-full overflow-hidden border border-premium-border/10 group-hover:border-premium-gold transition-colors">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden border border-premium-border/10 group-hover:border-premium-gold transition-colors">
               <img src="/images/logo.jpeg" alt={`${brandName} Logo`} className="w-full h-full object-cover" />
             </div>
             <span className="text-2xl font-bold tracking-widest text-foreground uppercase hidden sm:block">
