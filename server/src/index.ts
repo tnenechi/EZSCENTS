@@ -26,12 +26,11 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 // Session Middleware
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "secretscents_secret_key",
+    secret: process.env.SESSION_SECRET || "ezscents_secret_key",
     resave: false,
     saveUninitialized: false,
-    proxy: true, // Required for secure cookies behind a proxy
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/secretscents",
+      mongoUrl: process.env.MONGODB_URI || "mongodb://localhost:27017/ezscents",
       collectionName: "sessions",
     }),
     cookie: {
@@ -57,7 +56,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Secret Scents API is running...");
+  res.send("EzScents API is running...");
 });
 
 app.listen(PORT, () => {
