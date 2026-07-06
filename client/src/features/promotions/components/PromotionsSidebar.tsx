@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { getActivePromotions } from "../../../services/promotionService";
-import { optimizeImage } from "../../../utils/imageUtils";
+import CloudinaryImage from "../../../components/common/CloudinaryImage";
 
 const PromotionsSidebar = () => {
   const { data: promos, isLoading } = useQuery({
@@ -55,10 +55,12 @@ const PromotionsSidebar = () => {
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            <img
-              src={optimizeImage(currentPromo.image)}
+            <CloudinaryImage
+              image={currentPromo.image}
               alt={currentPromo.title}
               className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+              width={320}
+              height={400}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
               <h4 className="text-xl font-bold text-white mb-2 tracking-tight">

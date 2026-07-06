@@ -17,6 +17,8 @@ import { useCartStore } from "../store/cartStore";
 import { useAuthStore } from "../store/authStore";
 import { createOrder } from "../services/orderService";
 import MainLayout from "../components/layout/MainLayout";
+import { getImageUrl } from "../utils/cloudinary";
+import CloudinaryImage from "../components/common/CloudinaryImage";
 
 const shippingSchema = z.object({
   address: z.string().min(5, "Address is too short"),
@@ -34,7 +36,10 @@ interface BankTransferInstructionsProps {
   copied: boolean;
 }
 
-const BankTransferInstructions = ({ handleCopy, copied }: BankTransferInstructionsProps) => (
+const BankTransferInstructions = ({
+  handleCopy,
+  copied,
+}: BankTransferInstructionsProps) => (
   <div className="bg-premium-gold/5 border border-premium-gold/20 p-6 space-y-4 animate-fade-in">
     <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-premium-gold">
       Payment Instructions
@@ -44,9 +49,13 @@ const BankTransferInstructions = ({ handleCopy, copied }: BankTransferInstructio
         <p className="text-premium-muted-light uppercase text-[9px] font-bold tracking-widest">
           Bank Details
         </p>
-        <p className="font-bold text-foreground">{import.meta.env.VITE_BANK_NAME}</p>
+        <p className="font-bold text-foreground">
+          {import.meta.env.VITE_BANK_NAME}
+        </p>
         <div className="flex items-center gap-2">
-          <p className="font-bold text-foreground">{import.meta.env.VITE_BANK_ACCOUNT}</p>
+          <p className="font-bold text-foreground">
+            {import.meta.env.VITE_BANK_ACCOUNT}
+          </p>
           <button
             onClick={() => handleCopy(import.meta.env.VITE_BANK_ACCOUNT)}
             className="text-premium-gold hover:text-foreground transition-colors p-1"
@@ -61,15 +70,12 @@ const BankTransferInstructions = ({ handleCopy, copied }: BankTransferInstructio
           )}
         </div>
         <p className="font-bold text-premium-gold">
-          {import.meta.env.VITE_BRAND_NAME.toUpperCase()} INTERNATIONAL
-          LIMITED
+          {import.meta.env.VITE_BRAND_NAME.toUpperCase()} INTERNATIONAL LIMITED
         </p>
       </div>
 
       <div className="space-y-2 text-premium-muted leading-relaxed">
-        <p>
-          Your order will only be processed when payment has been received.
-        </p>
+        <p>Your order will only be processed when payment has been received.</p>
         <p className="text-red-500/80 italic">
           Please note: Orders not paid for within 24 hours of purchase will be
           canceled and invalid.
@@ -80,7 +86,9 @@ const BankTransferInstructions = ({ handleCopy, copied }: BankTransferInstructio
         <p className="text-premium-muted-light uppercase text-[9px] font-bold tracking-widest">
           After Payment
         </p>
-        <p className="text-premium-muted">Send proof of payment (screenshot) to customer care via:</p>
+        <p className="text-premium-muted">
+          Send proof of payment (screenshot) to customer care via:
+        </p>
         <p className="font-bold text-premium-gold">
           {import.meta.env.VITE_WHATSAPP_NUMBER} (WhatsApp)
         </p>
@@ -133,7 +141,7 @@ const CheckoutPage = () => {
         orderItems: items.map((item) => ({
           name: item.product.name,
           quantity: item.quantity,
-          image: item.product.images[0],
+          image: getImageUrl(item.product.images[0]),
           price: item.variant.price,
           product: item.product._id,
           variantId: item.variant._id,
@@ -346,7 +354,10 @@ const CheckoutPage = () => {
                       <Landmark size={24} className="text-premium-muted" />
                     </div>
 
-                    <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
+                    <BankTransferInstructions
+                      handleCopy={handleCopy}
+                      copied={copied}
+                    />
                   </div>
 
                   <div className="flex gap-4">
@@ -397,7 +408,9 @@ const CheckoutPage = () => {
                         <p className="text-[10px] uppercase tracking-widest text-premium-muted mb-1 font-bold">
                           Payment Method
                         </p>
-                        <p className="text-sm font-medium text-foreground">Bank Transfer</p>
+                        <p className="text-sm font-medium text-foreground">
+                          Bank Transfer
+                        </p>
                       </div>
                       <button
                         type="button"
@@ -409,7 +422,10 @@ const CheckoutPage = () => {
                     </div>
                   </div>
 
-                  <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
+                  <BankTransferInstructions
+                    handleCopy={handleCopy}
+                    copied={copied}
+                  />
 
                   <button
                     onClick={handleSubmit(onPlaceOrder)}
@@ -443,7 +459,10 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="max-w-md mx-auto">
-                    <BankTransferInstructions handleCopy={handleCopy} copied={copied} />
+                    <BankTransferInstructions
+                      handleCopy={handleCopy}
+                      copied={copied}
+                    />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto pt-8">
@@ -479,8 +498,9 @@ const CheckoutPage = () => {
                       className="flex gap-4"
                     >
                       <div className="w-12 h-12 bg-premium-gray overflow-hidden">
-                        <img
-                          src={item.product.images[0]}
+                        <CloudinaryImage
+                          image={item.product.images[0]}
+                          alt={item.product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>

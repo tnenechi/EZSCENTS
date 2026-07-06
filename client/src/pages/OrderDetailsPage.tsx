@@ -18,6 +18,7 @@ import {
 } from "../services/orderService";
 import { useAuthStore } from "../store/authStore";
 import MainLayout from "../components/layout/MainLayout";
+import { getImageUrl } from "../utils/cloudinary";
 
 const OrderDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -162,7 +163,9 @@ const OrderDetailsPage = () => {
                     <CheckCircle2 size={16} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold uppercase text-foreground">Order Placed</p>
+                    <p className="text-sm font-bold uppercase text-foreground">
+                      Order Placed
+                    </p>
                     <p className="text-[10px] text-premium-muted">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
@@ -192,7 +195,9 @@ const OrderDetailsPage = () => {
                     <Truck size={16} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold uppercase text-foreground">Dispatched</p>
+                    <p className="text-sm font-bold uppercase text-foreground">
+                      Dispatched
+                    </p>
                     <p className="text-[10px] text-premium-muted">
                       {order.isDispatched && order.dispatchedAt
                         ? new Date(order.dispatchedAt).toLocaleString()
@@ -227,7 +232,7 @@ const OrderDetailsPage = () => {
                       <p className="font-bold text-foreground">ZENITH BANK</p>
                       <p className="font-bold text-foreground">1234567890</p>
                       <p className="font-bold text-premium-gold uppercase">
-                        EZSCENTS INTERNATIONAL LIMITED
+                        SECRET SCENTS INTERNATIONAL LIMITED
                       </p>
                       <p className="font-bold mt-2 text-foreground">
                         Amount: ₦{order.totalPrice.toLocaleString()}
@@ -277,13 +282,17 @@ const OrderDetailsPage = () => {
                   <div className="flex items-center gap-3">
                     <UserIcon size={16} className="text-premium-gold" />
                     <p className="text-sm font-bold uppercase tracking-tight text-foreground">
-                      {order.user?.name || order.guestInfo?.name || "Guest Customer"}
+                      {order.user?.name ||
+                        order.guestInfo?.name ||
+                        "Guest Customer"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail size={16} className="text-premium-gold" />
                     <p className="text-xs text-premium-muted">
-                      {order.user?.email || order.guestInfo?.email || "No email provided"}
+                      {order.user?.email ||
+                        order.guestInfo?.email ||
+                        "No email provided"}
                     </p>
                   </div>
                 </div>
@@ -303,7 +312,7 @@ const OrderDetailsPage = () => {
                   >
                     <div className="w-16 h-20 bg-premium-gray overflow-hidden">
                       <img
-                        src={item.image}
+                        src={getImageUrl(item.image)}
                         className="w-full h-full object-cover"
                         alt={item.name}
                       />
@@ -358,4 +367,3 @@ const OrderDetailsPage = () => {
 };
 
 export default OrderDetailsPage;
-

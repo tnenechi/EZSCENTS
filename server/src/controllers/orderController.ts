@@ -70,7 +70,7 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
       id: 'MANUAL_' + Date.now(),
       status: 'COMPLETED',
       update_time: new Date().toISOString(),
-      email_address: (req as any).user?.email || 'admin@ezscents.com',
+      email_address: (req as any).user?.email || 'admin@secretscents.com',
       reference: 'ADMIN_VERIFIED',
     };
     

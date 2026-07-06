@@ -5,13 +5,20 @@ export interface Variant {
   stock: number;
 }
 
+export interface CloudinaryImageRef {
+  url: string;
+  publicId: string;
+}
+
+export type ImageRef = string | CloudinaryImageRef;
+
 export interface Product {
   _id: string;
   name: string;
   brand: string;
   description: string;
   category: string;
-  images: string[];
+  images: ImageRef[];
   variants: Variant[];
   isFeatured: boolean;
   rating: number;
@@ -23,7 +30,7 @@ export interface Promotion {
   _id: string;
   title: string;
   description?: string;
-  image: string;
+  image: ImageRef;
   products?: string[];
   isActive: boolean;
   startDate?: string;
@@ -34,7 +41,7 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
 }
 
 export interface ShippingAddress {
@@ -77,6 +84,6 @@ export interface Order {
   paidAt?: string;
   isDispatched: boolean;
   dispatchedAt?: string;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   createdAt: string;
 }

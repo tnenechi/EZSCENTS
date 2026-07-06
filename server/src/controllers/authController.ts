@@ -1,5 +1,7 @@
-import type{ Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import User from '../models/User';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/emailService';
+import crypto from 'crypto';
 
 // Extend Request type to include session
 declare module 'express-session' {
@@ -35,6 +37,9 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   if (user) {
     // Store user ID in session
     req.session.userId = user._id.toString();
+
+    // Trigger Welcome Email (Async)
+    sendWelcomeEmail(user);
 
     res.status(201).json({
       _id: user._id,
@@ -110,5 +115,79 @@ export const updateUserPassword = async (req: Request, res: Response): Promise<v
     res.json({ message: 'Password updated successfully' });
   } else {
     res.status(401).json({ message: 'Invalid current password' });
+  }
+};
+
+// @desc    Forgot password request
+// @route   POST /api/auth/forgot-password
+// @access  Public
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    // Always respond with success to prevent user enumeration
+    if (!user) {
+      res.json({ message: 'If that email address is registered, a password reset link has been sent.' });
+      return;
+    }
+
+    // Generate random token
+    const token = crypto.randomBytes(20).toString('hex');
+
+    // Hash and set reset fields
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+
+    await user.save();
+
+    // Create reset URL
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const resetUrl = `${clientUrl}/reset-password/${token}`;
+
+    // Send email
+    await sendPasswordResetEmail(user, resetUrl);
+
+    res.json({ message: 'If that email address is registered, a password reset link has been sent.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+// @desc    Reset password
+// @route   PUT /api/auth/reset-password/:token
+// @access  Public
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  const { password } = req.body;
+  const { token } = req.params;
+
+  try {
+    const hashedToken = crypto.createHash('sha256').update(token as string).digest('hex');
+
+    // Find user with token and valid expiry
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      res.status(400).json({ message: 'Invalid or expired password reset token' });
+      return;
+    }
+
+    // Set new password (will be hashed by pre-save hook)
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: 'Password reset successful. You can now login.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Something went wrong' });
   }
 };

@@ -1,43 +1,49 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, User as UserIcon, Search, Menu, LogOut, X } from "lucide-react";
+import { ShoppingBag, User as UserIcon, Menu, LogOut, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
+import { getFilters } from "../../services/productService";
 import ThemeToggle from "../common/ThemeToggle";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+
   const items = useCartStore((state) => state.items);
   const { userInfo, logout } = useAuthStore();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+  const { data: filtersData } = useQuery({
+    queryKey: ["filters"],
+    queryFn: getFilters,
+  });
+
+  const brands = filtersData?.brands || [];
+
+  const handleBrandSelect = (brand: string) => {
+    navigate(`/shop?brand=${encodeURIComponent(brand)}`);
+    setIsCollectionOpen(false);
+    setIsMenuOpen(false);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/shop?keyword=${searchQuery}`);
-      setIsSearchOpen(false);
-      setSearchQuery("");
-    }
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   const menuVariants = {
-    closed: { x: "-100%" as any, transition: { type: "spring" as const, stiffness: 300, damping: 30 } },
-    open: { x: 0, transition: { type: "spring" as const, stiffness: 300, damping: 30 } }
-  };
-
-  const searchVariants = {
-    closed: { opacity: 0, y: -20, pointerEvents: "none" as const },
-    open: { opacity: 1, y: 0, pointerEvents: "auto" as const }
+    closed: {
+      x: "-100%" as any,
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+    },
+    open: {
+      x: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+    },
   };
 
   const brandName = import.meta.env.VITE_BRAND_NAME;
@@ -46,25 +52,62 @@ const Navbar = () => {
     <>
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-premium-border/10 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <button 
+          <button
             onClick={() => setIsMenuOpen(true)}
             className="lg:hidden text-foreground hover:text-premium-gold transition-colors"
           >
             <Menu size={24} />
           </button>
-          <Link
-            to="/"
-            className="flex items-center gap-3 group"
-          >
+          <Link to="/" className="flex items-center gap-3 group">
             <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden border border-premium-border/10 group-hover:border-premium-gold transition-colors">
-              <img src="/images/logo.jpeg" alt={`${brandName} Logo`} className="w-full h-full object-cover" />
+              <img
+                src="/images/logo.jpeg"
+                alt={`${brandName} Logo`}
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="text-2xl font-bold tracking-widest text-foreground uppercase hidden sm:block">
-              {brandName}
-            </span>
           </Link>
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium tracking-wide uppercase text-premium-muted">
-            <Link to="/shop" className="hover:text-foreground transition-colors">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsCollectionOpen(!isCollectionOpen)}
+                className="hover:text-foreground transition-colors"
+              >
+                Our Collection
+              </button>
+              <AnimatePresence>
+                {isCollectionOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute left-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-premium-border/10 bg-background shadow-2xl"
+                  >
+                    {brands.length > 0 ? (
+                      brands.map((brand) => (
+                        <button
+                          key={brand}
+                          type="button"
+                          onClick={() => handleBrandSelect(brand)}
+                          className="block w-full text-left px-4 py-3 text-[10px] uppercase tracking-[0.3em] text-premium-muted hover:bg-premium-gray/10 hover:text-foreground transition-colors"
+                        >
+                          {brand}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-[10px] uppercase tracking-[0.3em] text-premium-muted">
+                        Loading brands...
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <Link
+              to="/shop"
+              className="hover:text-foreground transition-colors"
+            >
               Shop All
             </Link>
             <Link
@@ -90,25 +133,19 @@ const Navbar = () => {
 
         <div className="flex items-center gap-6 text-foreground">
           <ThemeToggle />
-          <button 
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="hover:text-premium-gold transition-colors"
-          >
-            {isSearchOpen ? <X size={20} /> : <Search size={20} />}
-          </button>
-          
+
           {userInfo ? (
             <div className="flex items-center gap-4">
               <Link
-                to={userInfo.role === 'admin' ? "/admin" : "/profile"}
+                to={userInfo.role === "admin" ? "/admin" : "/profile"}
                 className="flex items-center gap-2 hover:text-premium-gold transition-colors"
               >
                 <UserIcon size={20} />
                 <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-widest">
-                  {userInfo.name.split(' ')[0]}
+                  {userInfo.name.split(" ")[0]}
                 </span>
               </Link>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="hover:text-red-500 transition-colors"
                 title="Logout"
@@ -140,36 +177,6 @@ const Navbar = () => {
             )}
           </Link>
         </div>
-
-        {/* Search Overlay */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={searchVariants}
-              className="absolute top-full left-0 w-full bg-background border-b border-premium-border/10 p-6 z-40 shadow-2xl"
-            >
-              <form onSubmit={handleSearch} className="max-w-4xl mx-auto flex gap-4">
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="SEARCH FOR FRAGRANCES, BRANDS..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-b border-premium-border/20 py-4 text-xl uppercase tracking-widest outline-none focus:border-premium-gold transition-colors text-foreground"
-                />
-                <button 
-                  type="submit"
-                  className="bg-premium-gold text-premium-black px-8 uppercase text-[10px] font-bold tracking-widest hover:bg-foreground hover:text-background transition-colors"
-                >
-                  Search
-                </button>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </nav>
 
       {/* Mobile Menu Sidebar */}
@@ -191,62 +198,92 @@ const Navbar = () => {
               className="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-background z-[70] p-8 border-r border-premium-border/10"
             >
               <div className="flex justify-between items-center mb-12">
-                <span className="text-xl font-bold uppercase tracking-widest text-foreground">Menu</span>
-                <button onClick={() => setIsMenuOpen(false)} className="text-premium-muted hover:text-foreground transition-colors">
+                <span className="text-xl font-bold uppercase tracking-widest text-foreground">
+                  Menu
+                </span>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-premium-muted hover:text-foreground transition-colors"
+                >
                   <X size={24} />
                 </button>
               </div>
 
               <div className="flex flex-col gap-8">
-                <Link 
-                  to="/shop" 
+                <Link
+                  to="/shop"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-2xl font-bold uppercase tracking-tighter hover:text-premium-gold transition-colors text-foreground"
                 >
                   Shop All
                 </Link>
-                <Link 
-                  to="/shop?category=men" 
+                <Link
+                  to="/shop?category=men"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-2xl font-bold uppercase tracking-tighter hover:text-premium-gold transition-colors text-foreground"
                 >
                   Men
                 </Link>
-                <Link 
-                  to="/shop?category=women" 
+                <Link
+                  to="/shop?category=women"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-2xl font-bold uppercase tracking-tighter hover:text-premium-gold transition-colors text-foreground"
                 >
                   Women
                 </Link>
-                <Link 
-                  to="/shop?category=unisex" 
+                <Link
+                  to="/shop?category=unisex"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-2xl font-bold uppercase tracking-tighter hover:text-premium-gold transition-colors text-foreground"
                 >
                   Unisex
                 </Link>
-                
+
+                <div className="pt-6 border-t border-premium-border/10">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-premium-muted mb-4">
+                    Our Collection
+                  </p>
+                  {brands.length > 0 ? (
+                    brands.map((brand) => (
+                      <button
+                        key={brand}
+                        type="button"
+                        onClick={() => handleBrandSelect(brand)}
+                        className="block w-full text-left text-2xl font-bold uppercase tracking-tighter hover:text-premium-gold transition-colors text-foreground mb-4"
+                      >
+                        {brand}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-premium-muted">
+                      Loading brands...
+                    </div>
+                  )}
+                </div>
+
                 <div className="pt-8 border-t border-premium-border/10 mt-8 space-y-6">
                   {userInfo ? (
                     <>
-                      <Link 
-                        to={userInfo.role === 'admin' ? "/admin" : "/profile"}
+                      <Link
+                        to={userInfo.role === "admin" ? "/admin" : "/profile"}
                         onClick={() => setIsMenuOpen(false)}
                         className="block text-[10px] font-bold uppercase tracking-[0.2em] text-premium-muted hover:text-foreground transition-colors"
                       >
                         My Account
                       </Link>
-                      <button 
-                        onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
                         className="block text-[10px] font-bold uppercase tracking-[0.2em] text-red-500 hover:text-red-400"
                       >
                         Logout
                       </button>
                     </>
                   ) : (
-                    <Link 
-                      to="/login" 
+                    <Link
+                      to="/login"
                       onClick={() => setIsMenuOpen(false)}
                       className="block text-[10px] font-bold uppercase tracking-[0.2em] text-premium-gold hover:text-foreground transition-colors"
                     >

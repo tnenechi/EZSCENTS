@@ -15,7 +15,7 @@ import { motion } from "framer-motion";
 import { getProductById } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import MainLayout from "../components/layout/MainLayout";
-import { optimizeImage } from "../utils/imageUtils";
+import CloudinaryImage from "../components/common/CloudinaryImage";
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -109,10 +109,12 @@ const ProductDetailPage = () => {
           {/* Image Gallery */}
           <div className="space-y-4">
             <div className="aspect-[4/5] bg-premium-gray/30 overflow-hidden rounded-sm border border-premium-border/10">
-              <img
-                src={optimizeImage(product.images[activeImage])}
+              <CloudinaryImage
+                image={product.images[activeImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                width={800}
+                height={1000}
               />
             </div>
             {product.images.length > 1 && (
@@ -123,10 +125,12 @@ const ProductDetailPage = () => {
                     onClick={() => setActiveImage(idx)}
                     className={`aspect-square border-2 transition-all rounded-sm ${activeImage === idx ? "border-premium-gold" : "border-premium-border/10"}`}
                   >
-                    <img
-                      src={optimizeImage(img)}
+                    <CloudinaryImage
+                      image={img}
                       alt=""
                       className="w-full h-full object-cover"
+                      width={240}
+                      height={240}
                     />
                   </button>
                 ))}
@@ -193,7 +197,8 @@ const ProductDetailPage = () => {
                     key={variant._id}
                     onClick={() => setSelectedVariantId(variant._id)}
                     className={`px-6 py-3 text-xs font-bold uppercase tracking-widest transition-all border ${
-                      (selectedVariantId ?? product.variants[0]._id) === variant._id
+                      (selectedVariantId ?? product.variants[0]._id) ===
+                      variant._id
                         ? "border-premium-gold text-premium-gold bg-premium-gold/5"
                         : "border-premium-border/20 text-premium-muted hover:border-premium-border/60 hover:text-foreground"
                     }`}

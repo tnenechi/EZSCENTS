@@ -20,12 +20,16 @@ import { getProducts } from "../../services/productService";
 import { uploadImage } from "../../services/uploadService";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { useQuery } from "@tanstack/react-query";
-import type { Product, Promotion } from "../../types";
+import CloudinaryImage from "../../components/common/CloudinaryImage";
+import type { Product, Promotion, ImageRef } from "../../types";
 
 const promotionSchema = z.object({
   title: z.string().min(2, "Title is required"),
   description: z.string().optional(),
-  image: z.string().min(1, "Image is required"),
+  image: z.union([
+    z.string().min(1, "Image is required"),
+    z.object({ url: z.string().url(), publicId: z.string().min(1) }),
+  ]),
   products: z.array(z.string()).default([]),
   isActive: z.boolean().default(true),
 });
@@ -57,15 +61,23 @@ const AdminPromotionEditPage = () => {
     },
   });
 
-  const currentImage = watch("image");
+  const currentImage = watch("image") as ImageRef | string;
   const selectedProductIds = watch("products") || [];
 
-  const { data: productsData } = useQuery<{ products: Product[]; page: number; pages: number }>({
+  const { data: productsData } = useQuery<{
+    products: Product[];
+    page: number;
+    pages: number;
+  }>({
     queryKey: ["admin-products-all"],
     queryFn: () => getProducts("", "", false, "", "", 1),
   });
 
-  const { data: searchResults } = useQuery<{ products: Product[]; page: number; pages: number }>({
+  const { data: searchResults } = useQuery<{
+    products: Product[];
+    page: number;
+    pages: number;
+  }>({
     queryKey: ["product-search-promo", productSearch],
     queryFn: () => getProducts(productSearch),
     enabled: productSearch.length > 0,
@@ -107,13 +119,13 @@ const AdminPromotionEditPage = () => {
     setIsUploading(true);
     try {
       const reader = new FileReader();
-      const uploadPromise = new Promise<string>((resolve, reject) => {
+      const uploadPromise = new Promise<ImageRef>((resolve, reject) => {
         reader.readAsDataURL(file);
         reader.onloadend = async () => {
           try {
             const base64data = reader.result as string;
-            const imageUrl = await uploadImage(base64data);
-            resolve(imageUrl);
+            const uploadedImage = await uploadImage(base64data);
+            resolve(uploadedImage);
           } catch (err) {
             reject(err);
           }
@@ -121,8 +133,8 @@ const AdminPromotionEditPage = () => {
         reader.onerror = reject;
       });
 
-      const url = await uploadPromise;
-      setValue("image", url);
+      const uploadedImage = await uploadPromise;
+      setValue("image", uploadedImage);
     } catch (error) {
       console.error("Upload failed", error);
       alert("Failed to upload banner image.");
@@ -244,8 +256,13 @@ const AdminPromotionEditPage = () => {
               <div className="aspect-[21/9] bg-background border border-premium-border/20 relative overflow-hidden flex items-center justify-center group">
                 {currentImage ? (
                   <>
-                    <img
-                      src={currentImage}
+                    <CloudinaryImage
+                      image={currentImage}
+                      alt={
+                        currentImage && typeof currentImage !== "string"
+                          ? currentImage.publicId
+                          : "Promotion banner"
+                      }
                       className="w-full h-full object-cover"
                     />
                     <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -283,7 +300,6 @@ const AdminPromotionEditPage = () => {
                   </label>
                 )}
               </div>
-              <input type="hidden" {...register("image")} />
               {errors.image && (
                 <p className="text-red-500 text-[9px] uppercase font-bold text-center">
                   {errors.image.message}
@@ -333,8 +349,9 @@ const AdminPromotionEditPage = () => {
                     onChange={() => {}}
                     className="w-4 h-4 accent-premium-gold"
                   />
-                  <img
-                    src={product.images[0]}
+                  <CloudinaryImage
+                    image={product.images[0]}
+                    alt={product.name}
                     className="w-10 h-14 object-cover rounded-sm"
                   />
                   <div className="flex-1">

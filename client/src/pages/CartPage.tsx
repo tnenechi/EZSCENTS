@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "../store/cartStore";
 import MainLayout from "../components/layout/MainLayout";
+import CloudinaryImage from "../components/common/CloudinaryImage";
 
 const CartPage = () => {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
@@ -64,8 +65,8 @@ const CartPage = () => {
                 className="flex flex-col sm:flex-row gap-6 pb-8 border-b border-premium-border/50"
               >
                 <div className="w-full sm:w-32 aspect-[4/5] bg-premium-gray overflow-hidden rounded-sm">
-                  <img
-                    src={item.product.images[0]}
+                  <CloudinaryImage
+                    image={item.product.images[0]}
                     alt={item.product.name}
                     className="w-full h-full object-cover"
                   />
@@ -191,4 +192,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-

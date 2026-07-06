@@ -3,19 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Plus,
-  Trash2,
-  Loader2,
-  ChevronLeft,
-  Save,
-} from "lucide-react";
+import { Plus, Trash2, Loader2, ChevronLeft, Save } from "lucide-react";
 import {
   getProductById,
   createProduct,
   updateProduct,
 } from "../../services/productService";
 import { uploadImage } from "../../services/uploadService";
+import CloudinaryImage from "../../components/common/CloudinaryImage";
+import type { ImageRef } from "../../types";
 import AdminLayout from "../../components/layout/AdminLayout";
 
 const productSchema = z.object({
@@ -42,7 +38,7 @@ const AdminProductEditPage = () => {
   const navigate = useNavigate();
   const isEditMode = !!id;
 
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<ImageRef[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSaving, setIsSaving] = useState(false);
@@ -105,13 +101,13 @@ const AdminProductEditPage = () => {
         const file = files[i];
         const reader = new FileReader();
 
-        const uploadPromise = new Promise<string>((resolve, reject) => {
+        const uploadPromise = new Promise<ImageRef>((resolve, reject) => {
           reader.readAsDataURL(file);
           reader.onloadend = async () => {
             try {
               const base64data = reader.result as string;
-              const imageUrl = await uploadImage(base64data);
-              resolve(imageUrl);
+              const uploadedImage = await uploadImage(base64data);
+              resolve(uploadedImage);
             } catch (err) {
               reject(err);
             }
@@ -119,8 +115,8 @@ const AdminProductEditPage = () => {
           reader.onerror = reject;
         });
 
-        const url = await uploadPromise;
-        setImages((prev) => [...prev, url]);
+        const uploadedImage = await uploadPromise;
+        setImages((prev) => [...prev, uploadedImage]);
       }
     } catch (error) {
       console.error("Upload failed", error);
@@ -354,7 +350,11 @@ const AdminProductEditPage = () => {
                   key={idx}
                   className="relative aspect-square bg-background border border-premium-border/20 overflow-hidden group"
                 >
-                  <img src={img} className="w-full h-full object-cover" />
+                  <CloudinaryImage
+                    image={img}
+                    alt={`Uploaded product image ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
                   <button
                     onClick={() =>
                       setImages(images.filter((_, i) => i !== idx))

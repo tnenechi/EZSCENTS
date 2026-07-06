@@ -16,6 +16,8 @@ import AdminProductEditPage from "./pages/admin/AdminProductEditPage";
 import AdminPromotionListPage from "./pages/admin/AdminPromotionListPage";
 import AdminPromotionEditPage from "./pages/admin/AdminPromotionEditPage";
 import AdminSecurityPage from "./pages/admin/AdminSecurityPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { useAuthStore } from "./store/authStore";
 import { useCartStore } from "./store/cartStore";
 import { useThemeStore } from "./store/themeStore";
@@ -56,6 +58,8 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order/:id" element={<OrderDetailsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboardPage />} />

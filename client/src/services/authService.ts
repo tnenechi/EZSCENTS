@@ -15,3 +15,13 @@ export const changePassword = async (currentPassword: string, newPassword: strin
   const { data } = await api.put<{ message: string }>('/auth/profile/password', { currentPassword, newPassword });
   return data;
 };
+
+export const forgotPassword = async (email: string): Promise<{ message: string }> => {
+  const { data } = await api.post<{ message: string }>('/auth/forgot-password', { email });
+  return data;
+};
+
+export const resetPassword = async (token: string, password: string): Promise<{ message: string }> => {
+  const { data } = await api.put<{ message: string }>(`/auth/reset-password/${token}`, { password });
+  return data;
+};

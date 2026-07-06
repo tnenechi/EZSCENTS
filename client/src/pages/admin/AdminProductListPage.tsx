@@ -5,13 +5,18 @@ import { Plus, Edit, Trash2, Search, ExternalLink } from "lucide-react";
 import { getProducts, deleteProduct } from "../../services/productService";
 import AdminLayout from "../../components/layout/AdminLayout";
 import TableSkeleton from "../../components/common/TableSkeleton";
+import CloudinaryImage from "../../components/common/CloudinaryImage";
 import type { Product } from "../../types";
 
 const AdminProductListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery<{ products: Product[]; page: number; pages: number }>({
+  const { data, isLoading } = useQuery<{
+    products: Product[];
+    page: number;
+    pages: number;
+  }>({
     queryKey: ["admin-products", searchTerm],
     queryFn: () => getProducts(searchTerm),
   });
@@ -94,10 +99,10 @@ const AdminProductListPage = () => {
                   >
                     <td className="py-5 pr-4">
                       <div className="w-12 h-16 bg-premium-gray overflow-hidden rounded-sm border border-premium-border/20">
-                        <img
-                          src={product.images[0]}
-                          className="w-full h-full object-cover"
+                        <CloudinaryImage
+                          image={product.images[0]}
                           alt={product.name}
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     </td>

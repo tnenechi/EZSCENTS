@@ -11,6 +11,7 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
+import { getImageUrl } from "../utils/cloudinary";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
 import { getMyOrders } from "../services/orderService";
@@ -210,7 +211,7 @@ const ProfilePage = () => {
                                 className="w-14 h-14 bg-premium-gray shrink-0 border border-premium-border/10 rounded-sm overflow-hidden"
                               >
                                 <img
-                                  src={item.image}
+                                  src={getImageUrl(item.image)}
                                   alt=""
                                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
                                   title={item.name}
