@@ -9,13 +9,13 @@ const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "sscent448@gmail.com";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
+    user: SUPPORT_EMAIL,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-const FROM_EMAIL = process.env.EMAIL_USER
-  ? `"Secret Scents" <${process.env.EMAIL_USER}>`
+const FROM_EMAIL = SUPPORT_EMAIL
+  ? `"Secret Scents" <${SUPPORT_EMAIL}>`
   : '"Secret Scents" <no-reply@secretscents.com>';
 
 export const sendOrderConfirmation = async (order: any) => {
