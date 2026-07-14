@@ -1,22 +1,19 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "sscent448@gmail.com";
+const FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL || SUPPORT_EMAIL || "onboarding@resend.dev";
+const FROM_ADDRESS = process.env.RESEND_FROM_NAME
+  ? `${process.env.RESEND_FROM_NAME} <${FROM_EMAIL}>`
+  : `"Secret Scents" <${FROM_EMAIL}>`;
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: SUPPORT_EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-const FROM_EMAIL = SUPPORT_EMAIL
-  ? `"Secret Scents" <${SUPPORT_EMAIL}>`
-  : '"Secret Scents" <no-reply@secretscents.com>';
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export const sendOrderConfirmation = async (order: any) => {
   const { user, guestInfo, orderItems, totalPrice, _id } = order;
@@ -38,9 +35,16 @@ export const sendOrderConfirmation = async (order: any) => {
     .join("");
 
   try {
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: recipientEmail,
+    if (!resend) {
+      console.warn(
+        "RESEND_API_KEY is not configured. Skipping order confirmation email.",
+      );
+      return;
+    }
+
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: [recipientEmail],
       subject: `Order Confirmation - Secret Scents #${_id.toString().slice(-6).toUpperCase()}`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">
@@ -91,9 +95,16 @@ export const sendOrderStatusUpdate = async (order: any) => {
   if (!recipientEmail) return;
 
   try {
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: recipientEmail,
+    if (!resend) {
+      console.warn(
+        "RESEND_API_KEY is not configured. Skipping order status email.",
+      );
+      return;
+    }
+
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: [recipientEmail],
       subject: `Order Status Updated - Secret Scents #${_id.toString().slice(-6).toUpperCase()}`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">
@@ -124,9 +135,14 @@ export const sendWelcomeEmail = async (user: any) => {
   if (!email) return;
 
   try {
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: email,
+    if (!resend) {
+      console.warn("RESEND_API_KEY is not configured. Skipping welcome email.");
+      return;
+    }
+
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: [email],
       subject: `Welcome to Secret Scents - Define Your Presence`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">
@@ -158,9 +174,16 @@ export const sendPasswordResetEmail = async (user: any, resetUrl: string) => {
   if (!email) return;
 
   try {
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: email,
+    if (!resend) {
+      console.warn(
+        "RESEND_API_KEY is not configured. Skipping password reset email.",
+      );
+      return;
+    }
+
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: [email],
       subject: `Reset Your Password - Secret Scents`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">

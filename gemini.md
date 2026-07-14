@@ -250,7 +250,4 @@ The project resides in a monorepo-style structure split into `/client` and `/ser
 6. **No global error middleware:** Express controllers handle asynchronous errors inside internal try-catch blocks individually. Uncaught router exceptions may cause server hangs or display stack traces to clients in development mode.
 
 
-## TODO
-welcome email links to local host
-email template shows hardcorderd email in the body
-contact us form/page
+ 
