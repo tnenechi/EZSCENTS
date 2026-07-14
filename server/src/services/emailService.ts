@@ -5,11 +5,7 @@ dotenv.config();
 
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || "sscent448@gmail.com";
-const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL || SUPPORT_EMAIL || "onboarding@resend.dev";
-const FROM_ADDRESS = process.env.RESEND_FROM_NAME
-  ? `${process.env.RESEND_FROM_NAME} <${FROM_EMAIL}>`
-  : `"Secret Scents" <${FROM_EMAIL}>`;
+const FROM_ADDRESS = "Secret Scents <support@contact.secretscent.org>";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -45,6 +41,7 @@ export const sendOrderConfirmation = async (order: any) => {
     await resend.emails.send({
       from: FROM_ADDRESS,
       to: [recipientEmail],
+      replyTo: SUPPORT_EMAIL,
       subject: `Order Confirmation - Secret Scents #${_id.toString().slice(-6).toUpperCase()}`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">
@@ -72,12 +69,15 @@ export const sendOrderConfirmation = async (order: any) => {
             </tfoot>
           </table>
 
+            <p>You can track your order journey in your account dashboard or by visiting <a href="${CLIENT_URL}">our website</a>.</p>
+
+
           <div style="background-color: #000; color: #fff; padding: 20px; text-align: center; margin-top: 40px;">
             <p style="margin: 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Luxury Scent Experience</p>
           </div>
           
           <p style="font-size: 12px; color: #999; margin-top: 30px; text-align: center;">
-            If you have any questions, reply to this email or contact ${SUPPORT_EMAIL}
+            If you have any questions, reply to this email or contact us at <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>. 
           </p>
         </div>
       `,
@@ -105,6 +105,7 @@ export const sendOrderStatusUpdate = async (order: any) => {
     await resend.emails.send({
       from: FROM_ADDRESS,
       to: [recipientEmail],
+      replyTo: SUPPORT_EMAIL,
       subject: `Order Status Updated - Secret Scents #${_id.toString().slice(-6).toUpperCase()}`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">
@@ -117,7 +118,11 @@ export const sendOrderStatusUpdate = async (order: any) => {
             <p style="margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Status: ${status}</p>
           </div>
 
-          <p>You can track your order journey in your account dashboard or by visiting our website.</p>
+          <p>You can track your order journey in your account dashboard or by visiting <a href="${CLIENT_URL}">our website</a>.</p>
+
+          <p style="font-size: 12px; color: #999; margin-top: 30px; text-align: center;">
+            If you have any questions, reply to this email or contact us at <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>. 
+          </p>
 
           <div style="background-color: #000; color: #fff; padding: 20px; text-align: center; margin-top: 40px;">
             <p style="margin: 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Your Journey Continues</p>
