@@ -399,7 +399,7 @@ const AdminPromotionEditPage = () => {
               ) : (
                 <Save size={18} />
               )}
-              {isEditMode ? "Update Banner" : "Publish Banner"}
+              {isEditMode ? "Save Changes" : "Publish Banner"}
             </button>
             <button
               type="button"

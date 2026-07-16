@@ -148,6 +148,7 @@ export const sendWelcomeEmail = async (user: any) => {
     await resend.emails.send({
       from: FROM_ADDRESS,
       to: [email],
+      replyTo: SUPPORT_EMAIL,
       subject: `Welcome to Secret Scents - Define Your Presence`,
       html: `
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 40px;">

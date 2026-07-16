@@ -195,7 +195,7 @@ const Navbar = () => {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-background z-[70] p-8 border-r border-premium-border/10"
+              className="fixed top-0 left-0 h-full w-[80%] max-w-sm bg-background z-[70] p-8  overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-12">
                 <span className="text-xl font-bold uppercase tracking-widest text-foreground">
@@ -291,12 +291,12 @@ const Navbar = () => {
                     </Link>
                   )}
                 </div>
-              </div>
 
-              <div className="absolute bottom-8 left-8 right-8">
-                <p className="text-[9px] uppercase tracking-widest text-premium-muted-light font-bold">
-                  {import.meta.env.VITE_BRAND_NAME} Luxury Fragrances
-                </p>
+                <div className="mt-1 space-y-6">
+                  <p className="text-[9px] uppercase tracking-widest text-premium-muted-light font-bold">
+                    {import.meta.env.VITE_BRAND_NAME} Luxury Fragrances
+                  </p>
+                </div>
               </div>
             </motion.aside>
           </>
