@@ -34,7 +34,11 @@ const CollectionsPage = () => {
     } else {
       newParams.delete(key);
     }
-    newParams.set("pageNumber", "1"); // Reset to page 1 on filter change
+
+    if (key !== "pageNumber") {
+      newParams.set("pageNumber", "1"); // Reset to page 1 on filter change
+    }
+
     setSearchParams(newParams);
   };
 
