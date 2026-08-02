@@ -2,24 +2,28 @@ import api from "./api";
 import type { Product } from "../types";
 
 export const getProducts = async (
-  keyword = "", 
-  category = "", 
-  isFeatured = false, 
+  keyword = "",
+  category = "",
+  isFeatured = false,
   brand = "",
   sort = "",
   pageNumber = 1,
-  promotionId = ""
-) => {
+  promotionId = "",
+): Promise<{ products: Product[]; page: number; pages: number }> => {
   const { data } = await api.get<{
     products: Product[];
     page: number;
     pages: number;
-  }>(`/products?keyword=${keyword}&category=${category}&isFeatured=${isFeatured}&brand=${brand}&sort=${sort}&pageNumber=${pageNumber}&promotionId=${promotionId}`);
+  }>(
+    `/products?keyword=${keyword}&category=${category}&isFeatured=${isFeatured}&brand=${brand}&sort=${sort}&pageNumber=${pageNumber}&promotionId=${promotionId}`,
+  );
   return data;
 };
 
 export const getFilters = async () => {
-  const { data } = await api.get<{ brands: string[]; categories: string[] }>("/products/filters");
+  const { data } = await api.get<{ brands: string[]; categories: string[] }>(
+    "/products/filters",
+  );
   return data;
 };
 

@@ -91,8 +91,10 @@ const AdminPromotionEditPage = () => {
     if (isEditMode) {
       const fetchPromo = async () => {
         try {
-          const promos = await getActivePromotions();
-          const promo = promos.find((p: Promotion) => p._id === id);
+          const promosResponse = await getActivePromotions();
+          const promo = promosResponse.promotions.find(
+            (p: Promotion) => p._id === id,
+          );
           if (promo) {
             reset({
               title: promo.title,

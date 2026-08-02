@@ -1,23 +1,21 @@
-import { Request, Response } from 'express';
-import Order from '../models/Order';
-import User from '../models/User';
-import { sendOrderConfirmation, sendOrderStatusUpdate } from '../services/emailService';
-import mongoose from 'mongoose';
+import { Request, Response } from "express";
+import Order from "../models/Order";
+import User from "../models/User";
+import {
+  sendOrderConfirmation,
+  sendOrderStatusUpdate,
+} from "../services/emailService";
+import mongoose from "mongoose";
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Public
 export const addOrderItems = async (req: Request, res: Response) => {
-  const {
-    orderItems,
-    shippingAddress,
-    paymentMethod,
-    totalPrice,
-    guestInfo,
-  } = req.body;
+  const { orderItems, shippingAddress, paymentMethod, totalPrice, guestInfo } =
+    req.body;
 
   if (orderItems && orderItems.length === 0) {
-    res.status(400).json({ message: 'No order items' });
+    res.status(400).json({ message: "No order items" });
     return;
   }
 
@@ -31,10 +29,10 @@ export const addOrderItems = async (req: Request, res: Response) => {
   });
 
   const createdOrder = await order.save();
-  
+
   // Populate user for email confirmation if registered
   if (createdOrder.user) {
-    await createdOrder.populate('user', 'name email');
+    await createdOrder.populate("user", "name email");
   }
 
   // Trigger Email (Async)
@@ -47,12 +45,15 @@ export const addOrderItems = async (req: Request, res: Response) => {
 // @route   GET /api/orders/:id
 // @access  Public
 export const getOrderById = async (req: Request, res: Response) => {
-  const order = await Order.findById(req.params.id).populate('user', 'name email');
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "name email",
+  );
 
   if (order) {
     res.json(order);
   } else {
-    res.status(404).json({ message: 'Order not found' });
+    res.status(404).json({ message: "Order not found" });
   }
 };
 
@@ -65,29 +66,29 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
   if (order) {
     order.isPaid = true;
     order.paidAt = new Date();
-    
+
     order.paymentResult = {
-      id: 'MANUAL_' + Date.now(),
-      status: 'COMPLETED',
+      id: "MANUAL_" + Date.now(),
+      status: "COMPLETED",
       update_time: new Date().toISOString(),
-      email_address: (req as any).user?.email || 'admin@secretscents.com',
-      reference: 'ADMIN_VERIFIED',
+      email_address: (req as any).user?.email || "admin@secretscents.com",
+      reference: "ADMIN_VERIFIED",
     };
-    
-    order.status = 'Processing';
+
+    order.status = "Processing";
 
     const updatedOrder = await order.save();
-    
+
     // Populate user for status update email
     if (updatedOrder.user) {
-      await updatedOrder.populate('user', 'name email');
+      await updatedOrder.populate("user", "name email");
     }
-    
+
     sendOrderStatusUpdate(updatedOrder);
 
     res.json(updatedOrder);
   } else {
-    res.status(404).json({ message: 'Order not found' });
+    res.status(404).json({ message: "Order not found" });
   }
 };
 
@@ -95,7 +96,10 @@ export const updateOrderToPaid = async (req: Request, res: Response) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 export const getMyOrders = async (req: Request, res: Response) => {
-  const orders = await Order.find({ user: (req as any).user._id }).populate('user', 'name email');
+  const orders = await Order.find({ user: (req as any).user._id }).populate(
+    "user",
+    "name email",
+  );
   res.json(orders);
 };
 
@@ -108,12 +112,12 @@ export const getOrders = async (req: Request, res: Response) => {
   let query: any = {};
 
   // Filtering
-  if (isPaid === 'true') query.isPaid = true;
-  if (isPaid === 'false') query.isPaid = false;
-  if (isDispatched === 'true') query.isDispatched = true;
-  if (isDispatched === 'false') query.isDispatched = false;
-  
-  if (status === 'Processing') {
+  if (isPaid === "true") query.isPaid = true;
+  if (isPaid === "false") query.isPaid = false;
+  if (isDispatched === "true") query.isDispatched = true;
+  if (isDispatched === "false") query.isDispatched = false;
+
+  if (status === "Processing") {
     query.isDispatched = false;
   } else if (status) {
     query.status = status;
@@ -121,18 +125,18 @@ export const getOrders = async (req: Request, res: Response) => {
 
   // Searching
   if (keyword) {
-    const searchRegex = new RegExp(keyword as string, 'i');
+    const searchRegex = new RegExp(keyword as string, "i");
 
     // Find users matching name or email
     const users = await User.find({
       $or: [{ name: searchRegex }, { email: searchRegex }],
-    }).select('_id');
+    }).select("_id");
     const userIds = users.map((u) => u._id);
 
     // Build search conditions
     const searchConditions: any[] = [
-      { 'guestInfo.name': searchRegex },
-      { 'guestInfo.email': searchRegex },
+      { "guestInfo.name": searchRegex },
+      { "guestInfo.email": searchRegex },
       { user: { $in: userIds } },
     ];
 
@@ -147,11 +151,17 @@ export const getOrders = async (req: Request, res: Response) => {
     };
   }
 
-  const orders = await Order.find(query)
-    .populate('user', 'name email')
-    .sort({ createdAt: -1 });
+  const pageSize = 12;
+  const page = Number(req.query.pageNumber) || 1;
 
-  res.json(orders);
+  const count = await Order.countDocuments(query);
+  const orders = await Order.find(query)
+    .populate("user", "name email")
+    .sort({ createdAt: -1 })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ orders, page, pages: Math.ceil(count / pageSize), count });
 };
 
 // @desc    Update order to dispatched
@@ -163,19 +173,19 @@ export const updateOrderToDelivered = async (req: Request, res: Response) => {
   if (order) {
     order.isDispatched = true;
     order.dispatchedAt = new Date();
-    order.status = 'Shipped';
+    order.status = "Shipped";
 
     const updatedOrder = await order.save();
-    
+
     // Populate user for status update email
     if (updatedOrder.user) {
-      await updatedOrder.populate('user', 'name email');
+      await updatedOrder.populate("user", "name email");
     }
-    
+
     sendOrderStatusUpdate(updatedOrder);
 
     res.json(updatedOrder);
   } else {
-    res.status(404).json({ message: 'Order not found' });
+    res.status(404).json({ message: "Order not found" });
   }
 };

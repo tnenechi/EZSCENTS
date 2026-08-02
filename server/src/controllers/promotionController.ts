@@ -1,12 +1,21 @@
-import { Request, Response } from 'express';
-import Promotion from '../models/Promotion';
+import { Request, Response } from "express";
+import Promotion from "../models/Promotion";
 
 // @desc    Fetch active promotions
 // @route   GET /api/promotions
 // @access  Public
 export const getActivePromotions = async (req: Request, res: Response) => {
-  const promotions = await Promotion.find({ isActive: true });
-  res.json(promotions);
+  const pageSize = 12;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const filter = { isActive: true };
+  const count = await Promotion.countDocuments(filter);
+  const promotions = await Promotion.find(filter)
+    .sort({ createdAt: -1 })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ promotions, page, pages: Math.ceil(count / pageSize), count });
 };
 
 // @desc    Create a promotion
@@ -32,7 +41,8 @@ export const createPromotion = async (req: Request, res: Response) => {
 // @route   PUT /api/promotions/:id
 // @access  Private/Admin
 export const updatePromotion = async (req: Request, res: Response) => {
-  const { title, description, image, products, isActive, startDate, endDate } = req.body;
+  const { title, description, image, products, isActive, startDate, endDate } =
+    req.body;
 
   const promotion = await Promotion.findById(req.params.id);
 
@@ -48,7 +58,7 @@ export const updatePromotion = async (req: Request, res: Response) => {
     const updatedPromotion = await promotion.save();
     res.json(updatedPromotion);
   } else {
-    res.status(404).json({ message: 'Promotion not found' });
+    res.status(404).json({ message: "Promotion not found" });
   }
 };
 
@@ -60,8 +70,8 @@ export const deletePromotion = async (req: Request, res: Response) => {
 
   if (promotion) {
     await Promotion.deleteOne({ _id: promotion._id });
-    res.json({ message: 'Promotion removed' });
+    res.json({ message: "Promotion removed" });
   } else {
-    res.status(404).json({ message: 'Promotion not found' });
+    res.status(404).json({ message: "Promotion not found" });
   }
 };

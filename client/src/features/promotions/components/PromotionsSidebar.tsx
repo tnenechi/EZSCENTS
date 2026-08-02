@@ -7,9 +7,13 @@ import { getActivePromotions } from "../../../services/promotionService";
 import CloudinaryImage from "../../../components/common/CloudinaryImage";
 
 const PromotionsSidebar = () => {
-  const { data: promos, isLoading } = useQuery({
+  const { data: promos, isLoading } = useQuery<any[]>({
     queryKey: ["promotions"],
-    queryFn: getActivePromotions,
+    queryFn: async () => {
+      const res = await getActivePromotions();
+      // service may return a paginated object { promotions, page, pages }
+      return (res as any).promotions ?? res;
+    },
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,7 +64,9 @@ const PromotionsSidebar = () => {
     startAutoRotation();
   };
 
-  const currentPromo = promos[currentIndex];
+  const currentPromo = promos ? promos[currentIndex] : undefined;
+
+  if (!currentPromo) return null;
 
   return (
     <aside className="w-full lg:w-80 space-y-6">

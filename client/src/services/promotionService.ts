@@ -1,9 +1,21 @@
 import api from "./api";
 import type { Promotion } from "../types";
 
-export const getActivePromotions = async () => {
-  const { data } = await api.get<Promotion[]>("/promotions");
-  return data;
+export const getActivePromotions = async (
+  pageNumber = 1,
+): Promise<{
+  promotions: Promotion[];
+  page: number;
+  pages: number;
+  count: number;
+}> => {
+  const { data } = await api.get(`/promotions?pageNumber=${pageNumber}`);
+  return data as {
+    promotions: Promotion[];
+    page: number;
+    pages: number;
+    count: number;
+  };
 };
 
 // Admin methods

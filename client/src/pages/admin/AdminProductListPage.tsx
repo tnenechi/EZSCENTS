@@ -10,6 +10,7 @@ import type { Product } from "../../types";
 
 const AdminProductListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<{
@@ -17,8 +18,9 @@ const AdminProductListPage = () => {
     page: number;
     pages: number;
   }>({
-    queryKey: ["admin-products", searchTerm],
-    queryFn: () => getProducts(searchTerm),
+    queryKey: ["admin-products", searchTerm, pageNumber],
+    queryFn: () => getProducts(searchTerm, "", false, "", "", pageNumber),
+    placeholderData: (previousData) => previousData,
   });
 
   const deleteMutation = useMutation({
@@ -66,7 +68,10 @@ const AdminProductListPage = () => {
           type="text"
           placeholder="Search inventory..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPageNumber(1);
+          }}
           className="w-full bg-premium-gray border border-premium-border/30 pl-12 pr-4 py-4 text-sm focus:border-premium-gold outline-none transition-colors text-foreground"
         />
       </div>
@@ -162,6 +167,24 @@ const AdminProductListPage = () => {
               <p className="text-premium-muted-light uppercase tracking-widest text-[10px] font-bold">
                 No products found in inventory.
               </p>
+            </div>
+          )}
+
+          {data && data.pages > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              {[...Array(data.pages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPageNumber(i + 1)}
+                  className={`w-9 h-9 text-[10px] font-bold border transition-all ${
+                    data.page === i + 1
+                      ? "bg-premium-gold border-premium-gold text-premium-black"
+                      : "border-premium-border/20 text-premium-muted hover:border-foreground hover:text-foreground"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
             </div>
           )}
         </div>

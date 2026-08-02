@@ -1,5 +1,5 @@
-import api from './api';
-import type { Order, ShippingAddress } from '../types';
+import api from "./api";
+import type { Order, ShippingAddress } from "../types";
 
 export interface OrderData {
   orderItems: any[];
@@ -13,7 +13,7 @@ export interface OrderData {
 }
 
 export const createOrder = async (order: OrderData): Promise<Order> => {
-  const { data } = await api.post<Order>('/orders', order);
+  const { data } = await api.post<Order>("/orders", order);
   return data;
 };
 
@@ -22,20 +22,39 @@ export const getOrderDetails = async (id: string): Promise<Order> => {
   return data;
 };
 
-export const payOrder = async (id: string, paymentResult: any): Promise<Order> => {
+export const payOrder = async (
+  id: string,
+  paymentResult: any,
+): Promise<Order> => {
   const { data } = await api.put<Order>(`/orders/${id}/pay`, paymentResult);
   return data;
 };
 
 export const getMyOrders = async (): Promise<Order[]> => {
-  const { data } = await api.get<Order[]>('/orders/myorders');
+  const { data } = await api.get<Order[]>("/orders/myorders");
   return data;
 };
 
 // Admin methods
-export const getAllOrders = async (params?: { keyword?: string; isPaid?: string; isDispatched?: string; status?: string }): Promise<Order[]> => {
-  const { data } = await api.get<Order[]>('/orders', { params });
-  return data;
+export const getAllOrders = async (params?: {
+  keyword?: string;
+  isPaid?: string;
+  isDispatched?: string;
+  status?: string;
+  pageNumber?: number;
+}): Promise<{
+  orders: Order[];
+  page: number;
+  pages: number;
+  count: number;
+}> => {
+  const { data } = await api.get("/orders", { params });
+  return data as {
+    orders: Order[];
+    page: number;
+    pages: number;
+    count: number;
+  };
 };
 
 export const updateOrderToDispatched = async (id: string): Promise<Order> => {

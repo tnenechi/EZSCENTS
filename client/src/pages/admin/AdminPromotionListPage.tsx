@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
@@ -11,10 +12,19 @@ import type { Promotion } from "../../types";
 
 const AdminPromotionListPage = () => {
   const queryClient = useQueryClient();
-  const { data: promos, isLoading } = useQuery<Promotion[]>({
-    queryKey: ["admin-promos"],
-    queryFn: getActivePromotions,
+  const [pageNumber, setPageNumber] = useState(1);
+  const { data, isLoading } = useQuery<{
+    promotions: Promotion[];
+    page: number;
+    pages: number;
+    count: number;
+  }>({
+    queryKey: ["admin-promos", pageNumber],
+    queryFn: () => getActivePromotions(pageNumber),
+    placeholderData: (previousData) => previousData,
   });
+
+  const promos = data?.promotions;
 
   const deleteMutation = useMutation({
     mutationFn: deletePromotion,
@@ -107,6 +117,24 @@ const AdminPromotionListPage = () => {
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {data && data.pages > 1 && (
+        <div className="mt-6 flex justify-center gap-2">
+          {[...Array(data.pages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPageNumber(i + 1)}
+              className={`w-9 h-9 text-[10px] font-bold border transition-all ${
+                data.page === i + 1
+                  ? "bg-premium-gold border-premium-gold text-premium-black"
+                  : "border-premium-border/20 text-premium-muted hover:border-foreground hover:text-foreground"
+              }`}
+            >
+              {i + 1}
+            </button>
           ))}
         </div>
       )}

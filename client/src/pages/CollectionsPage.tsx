@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getProducts, getFilters } from "../services/productService";
 import MainLayout from "../components/layout/MainLayout";
 import ProductCard from "../features/products/components/ProductCard";
 import ProductCardSkeleton from "../features/products/components/ProductCardSkeleton";
-import { Search, Filter, X } from "lucide-react";
+import CloudinaryImage from "../components/common/CloudinaryImage";
+import { Search, Filter, X, List, LayoutGrid } from "lucide-react";
 
 const CollectionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +23,20 @@ const CollectionsPage = () => {
     queryFn: () =>
       getProducts(keyword, category, false, brand, sort, page, promotionId),
   });
+
+  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("productsViewMode");
+      if (saved === "grid" || saved === "list") return saved as "grid" | "list";
+      return window.innerWidth < 768 ? "list" : "grid";
+    }
+
+    return "grid";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("productsViewMode", viewMode);
+  }, [viewMode]);
 
   const { data: filtersData } = useQuery({
     queryKey: ["filters"],
@@ -120,6 +136,32 @@ const CollectionsPage = () => {
             <option value="price-desc">Price: High to Low</option>
           </select>
 
+          {/* View toggle */}
+          <div className="flex items-center gap-2 ml-2">
+            <button
+              aria-label="List view"
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-sm ${
+                viewMode === "list"
+                  ? "bg-premium-gold text-premium-black"
+                  : "bg-background"
+              }`}
+            >
+              <List size={16} />
+            </button>
+            <button
+              aria-label="Grid view"
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-sm ${
+                viewMode === "grid"
+                  ? "bg-premium-gold text-premium-black"
+                  : "bg-background"
+              }`}
+            >
+              <LayoutGrid size={16} />
+            </button>
+          </div>
+
           {(keyword || category || brand) && (
             <button
               onClick={clearFilters}
@@ -131,7 +173,7 @@ const CollectionsPage = () => {
           )}
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid / List */}
         {productsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[...Array(8)].map((_, i) => (
@@ -144,11 +186,45 @@ const CollectionsPage = () => {
               No products found matching your criteria.
             </p>
           </div>
-        ) : (
+        ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {productsData?.products.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {productsData?.products.map((product) => {
+              const lowestPrice = Math.min(
+                ...product.variants.map((v) => v.price),
+              );
+              return (
+                <a
+                  key={product._id}
+                  href={`/product/${product._id}`}
+                  className="flex items-center gap-4 p-4 bg-background border border-premium-border/10 rounded-sm hover:shadow-md transition-all"
+                >
+                  <div className="w-28 h-28 bg-premium-gray overflow-hidden rounded-sm">
+                    <CloudinaryImage
+                      image={product.images?.[0]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] text-premium-muted mb-1 font-bold">
+                      {product.brand}
+                    </h4>
+                    <h5 className="text-base font-bold mb-2 tracking-tight text-foreground">
+                      {product.name}
+                    </h5>
+                    <p className="text-foreground font-medium">
+                      ₦{lowestPrice.toLocaleString()}
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
           </div>
         )}
 
