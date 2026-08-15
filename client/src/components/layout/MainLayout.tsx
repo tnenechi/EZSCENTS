@@ -15,7 +15,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
 
-      <main className="pt-24 pb-12 px-6 lg:px-12 max-w-[1600px] mx-auto">
+      <main className="pt-24 sm:pt-28 lg:pt-32 pb-12 px-6 lg:px-12 max-w-[1600px] mx-auto">
         <div
           className={`flex flex-col lg:flex-row gap-12 ${!showSidebar ? "justify-center" : ""}`}
         >

@@ -61,3 +61,13 @@ export const updateOrderToDispatched = async (id: string): Promise<Order> => {
   const { data } = await api.put<Order>(`/orders/${id}/deliver`);
   return data;
 };
+
+export const deleteOrder = async (id: string) => {
+  const { data } = await api.delete(`/orders/${id}`);
+  return data;
+};
+
+export const deleteOrders = async (ids: string[]) => {
+  const { data } = await api.delete("/orders", { data: { ids } });
+  return data;
+};

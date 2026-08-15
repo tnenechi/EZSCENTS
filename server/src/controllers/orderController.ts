@@ -164,6 +164,35 @@ export const getOrders = async (req: Request, res: Response) => {
   res.json({ orders, page, pages: Math.ceil(count / pageSize), count });
 };
 
+// @desc    Delete an order
+// @route   DELETE /api/orders/:id
+// @access  Private/Admin
+export const deleteOrder = async (req: Request, res: Response) => {
+  const order = await Order.findById(req.params.id);
+
+  if (order) {
+    await Order.deleteOne({ _id: order._id });
+    res.json({ message: "Order removed" });
+  } else {
+    res.status(404).json({ message: "Order not found" });
+  }
+};
+
+// @desc    Delete multiple orders
+// @route   DELETE /api/orders
+// @access  Private/Admin
+export const deleteOrders = async (req: Request, res: Response) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    res.status(400).json({ message: "No order IDs provided" });
+    return;
+  }
+
+  const result = await Order.deleteMany({ _id: { $in: ids } });
+  res.json({ message: "Orders removed", deletedCount: result.deletedCount });
+};
+
 // @desc    Update order to dispatched
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin

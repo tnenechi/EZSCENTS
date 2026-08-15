@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // import type { UseQueryOptions } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Clock, Eye, Search, Filter, X } from "lucide-react";
-import { getAllOrders } from "../../services/orderService";
+import { CheckCircle2, Clock, Eye, Search, Filter, X, Trash2 } from "lucide-react";
+import { getAllOrders, deleteOrder, deleteOrders } from "../../services/orderService";
 import AdminLayout from "../../components/layout/AdminLayout";
 import TableSkeleton from "../../components/common/TableSkeleton";
 import type { Order } from "../../types";
@@ -13,6 +13,8 @@ const AdminOrderListPage = () => {
   const [isPaid, setIsPaid] = useState("");
   const [status, setStatus] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery<{
     orders: Order[];
@@ -25,11 +27,77 @@ const AdminOrderListPage = () => {
     placeholderData: (previousData) => previousData,
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      setSelectedIds(new Set());
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: deleteOrders,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      setSelectedIds(new Set());
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this order? This action cannot be undone.",
+      )
+    ) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedIds.size} order(s)? This action cannot be undone.`,
+      )
+    ) {
+      bulkDeleteMutation.mutate(Array.from(selectedIds));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const allOnPageSelected =
+    !!data?.orders.length && data.orders.every((o) => selectedIds.has(o._id));
+
+  const toggleSelectAll = () => {
+    if (!data?.orders.length) return;
+    setSelectedIds((prev) => {
+      if (allOnPageSelected) {
+        const next = new Set(prev);
+        data.orders.forEach((o) => next.delete(o._id));
+        return next;
+      }
+      const next = new Set(prev);
+      data.orders.forEach((o) => next.add(o._id));
+      return next;
+    });
+  };
+
   const clearFilters = () => {
     setKeyword("");
     setIsPaid("");
     setStatus("");
     setPageNumber(1);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -70,6 +138,7 @@ const AdminOrderListPage = () => {
             onChange={(e) => {
               setKeyword(e.target.value);
               setPageNumber(1);
+              setSelectedIds(new Set());
             }}
           />
         </div>
@@ -85,6 +154,7 @@ const AdminOrderListPage = () => {
             onChange={(e) => {
               setIsPaid(e.target.value);
               setPageNumber(1);
+              setSelectedIds(new Set());
             }}
           >
             <option value="" className="bg-background">
@@ -110,6 +180,7 @@ const AdminOrderListPage = () => {
             onChange={(e) => {
               setStatus(e.target.value);
               setPageNumber(1);
+              setSelectedIds(new Set());
             }}
           >
             <option value="" className="bg-background">
@@ -136,6 +207,20 @@ const AdminOrderListPage = () => {
         </div>
       )}
 
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between mb-6 p-4 bg-premium-gray border border-premium-border/30">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-foreground">
+            {selectedIds.size} order{selectedIds.size > 1 ? "s" : ""} selected
+          </p>
+          <button
+            onClick={handleBulkDelete}
+            className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-red-500 hover:text-red-400 transition-colors"
+          >
+            <Trash2 size={14} /> Delete Selected
+          </button>
+        </div>
+      )}
+
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : error ? (
@@ -149,6 +234,14 @@ const AdminOrderListPage = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-premium-border/10 text-[10px] uppercase tracking-widest text-premium-muted-light font-bold">
+                <th className="py-4 pr-2 w-8">
+                  <input
+                    type="checkbox"
+                    checked={allOnPageSelected}
+                    onChange={toggleSelectAll}
+                    className="accent-premium-gold"
+                  />
+                </th>
                 <th className="py-4 pr-4">Order ID</th>
                 <th className="py-4 px-4">Customer</th>
                 <th className="py-4 px-4">Date</th>
@@ -164,6 +257,14 @@ const AdminOrderListPage = () => {
                   key={order._id}
                   className="group hover:bg-premium-gray transition-colors"
                 >
+                  <td className="py-5 pr-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(order._id)}
+                      onChange={() => toggleSelect(order._id)}
+                      className="accent-premium-gold"
+                    />
+                  </td>
                   <td className="py-5 pr-4">
                     <span className="text-xs font-mono text-premium-muted font-bold">
                       #{order._id.slice(-6).toUpperCase()}
@@ -211,12 +312,20 @@ const AdminOrderListPage = () => {
                     )}
                   </td>
                   <td className="py-5 pl-4 text-right">
-                    <Link
-                      to={`/order/${order._id}`}
-                      className="inline-flex items-center gap-2 bg-premium-gray/20 hover:bg-premium-black text-premium-muted hover:text-white p-2 rounded-sm transition-all"
-                    >
-                      <Eye size={16} />
-                    </Link>
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        to={`/order/${order._id}`}
+                        className="inline-flex items-center gap-2 bg-premium-gray/20 hover:bg-premium-black text-premium-muted hover:text-white p-2 rounded-sm transition-all"
+                      >
+                        <Eye size={16} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(order._id)}
+                        className="inline-flex items-center gap-2 bg-premium-gray/20 hover:bg-red-500 text-premium-muted hover:text-white p-2 rounded-sm transition-all"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -235,7 +344,10 @@ const AdminOrderListPage = () => {
               {[...Array(data.pages)].map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => setPageNumber(i + 1)}
+                  onClick={() => {
+                    setPageNumber(i + 1);
+                    setSelectedIds(new Set());
+                  }}
                   className={`w-9 h-9 text-[10px] font-bold border transition-all ${
                     data.page === i + 1
                       ? "bg-premium-gold border-premium-gold text-premium-black"
