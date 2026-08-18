@@ -7,11 +7,12 @@ import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { register } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 import MainLayout from "../components/layout/MainLayout";
+import { getErrorMessage } from "../utils/errors";
 
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email address"),
+    email: z.email("Please enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
   })
@@ -53,8 +54,8 @@ const RegisterPage = () => {
     try {
       const user = await register(data.name, data.email, data.password);
       setUserInfo(user);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+    } catch (err) {
+      setError(getErrorMessage(err, "Registration failed"));
     } finally {
       setIsLoading(false);
     }

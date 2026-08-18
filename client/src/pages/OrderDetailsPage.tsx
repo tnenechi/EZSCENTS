@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -19,9 +19,12 @@ import {
 import { useAuthStore } from "../store/authStore";
 import MainLayout from "../components/layout/MainLayout";
 import { getImageUrl } from "../utils/cloudinary";
+import type { OrderItem } from "../types";
 
 const OrderDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const guestEmail = searchParams.get("email") || undefined;
   const { userInfo } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -30,8 +33,8 @@ const OrderDetailsPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["order", id],
-    queryFn: () => getOrderDetails(id as string),
+    queryKey: ["order", id, guestEmail],
+    queryFn: () => getOrderDetails(id as string, guestEmail),
     enabled: !!id,
   });
 
@@ -305,7 +308,7 @@ const OrderDetailsPage = () => {
                 Order Items
               </h2>
               <div className="space-y-4">
-                {order.orderItems.map((item: any) => (
+                {order.orderItems.map((item: OrderItem) => (
                   <div
                     key={item._id}
                     className="flex gap-4 border-b border-premium-border/30 pb-4"

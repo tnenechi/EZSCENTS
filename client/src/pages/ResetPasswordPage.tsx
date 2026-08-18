@@ -6,6 +6,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { resetPassword } from "../services/authService";
 import MainLayout from "../components/layout/MainLayout";
+import { getErrorMessage } from "../utils/errors";
 
 const resetPasswordSchema = z
   .object({
@@ -51,8 +52,10 @@ const ResetPasswordPage = () => {
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to reset password. The link may have expired.");
+    } catch (err) {
+      setError(
+        getErrorMessage(err, "Failed to reset password. The link may have expired."),
+      );
     } finally {
       setIsLoading(false);
     }

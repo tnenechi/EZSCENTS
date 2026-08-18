@@ -7,9 +7,10 @@ import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { login } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 import MainLayout from "../components/layout/MainLayout";
+import { getErrorMessage } from "../utils/errors";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -46,8 +47,8 @@ const LoginPage = () => {
     try {
       const user = await login(data.email, data.password);
       setUserInfo(user);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password");
+    } catch (err) {
+      setError(getErrorMessage(err, "Invalid email or password"));
     } finally {
       setIsLoading(false);
     }

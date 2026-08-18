@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { changePassword } from '../../services/authService';
 import AdminLayout from '../../components/layout/AdminLayout';
+import { getErrorMessage } from '../../utils/errors';
 
 const AdminSecurityPage = () => {
   const [passwordData, setPasswordData] = useState({
@@ -23,10 +24,10 @@ const AdminSecurityPage = () => {
       setPasswordStatus({ type: 'success', message: 'Password updated successfully' });
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     },
-    onError: (error: any) => {
-      setPasswordStatus({ 
-        type: 'error', 
-        message: error.response?.data?.message || 'Failed to update password' 
+    onError: (error: unknown) => {
+      setPasswordStatus({
+        type: 'error',
+        message: getErrorMessage(error, 'Failed to update password'),
       });
     }
   });

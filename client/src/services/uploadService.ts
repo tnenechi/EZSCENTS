@@ -1,7 +1,7 @@
 import api from "./api";
 import type { CloudinaryImageRef } from "../types";
 
-export interface UploadedImageResponse extends CloudinaryImageRef {}
+export type UploadedImageResponse = CloudinaryImageRef;
 
 export const uploadImage = async (
   base64Image: string,

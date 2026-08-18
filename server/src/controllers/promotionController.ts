@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import Promotion from "../models/Promotion";
+import { deleteImage } from "../services/cloudinaryService";
+
+const getPublicId = (image: any): string | undefined =>
+  image && typeof image === "object" ? image.publicId : undefined;
 
 // @desc    Fetch active promotions
 // @route   GET /api/promotions
@@ -47,6 +51,14 @@ export const updatePromotion = async (req: Request, res: Response) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (promotion) {
+    if (image) {
+      const oldPublicId = getPublicId(promotion.image);
+      const newPublicId = getPublicId(image);
+      if (oldPublicId && oldPublicId !== newPublicId) {
+        await deleteImage(oldPublicId);
+      }
+    }
+
     promotion.title = title || promotion.title;
     promotion.description = description || promotion.description;
     promotion.image = image || promotion.image;
@@ -69,6 +81,11 @@ export const deletePromotion = async (req: Request, res: Response) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (promotion) {
+    const publicId = getPublicId(promotion.image);
+    if (publicId) {
+      await deleteImage(publicId);
+    }
+
     await Promotion.deleteOne({ _id: promotion._id });
     res.json({ message: "Promotion removed" });
   } else {

@@ -13,22 +13,6 @@ export const uploadImage = async (fileStr: string) => {
   try {
     const uploadResponse = await cloudinary.uploader.upload(fileStr, {
       upload_preset: "ezscents_products",
-      eager: [
-        {
-          width: 400,
-          height: 500,
-          crop: "limit",
-          quality: "auto",
-          fetch_format: "auto",
-        },
-        {
-          width: 800,
-          height: 1000,
-          crop: "limit",
-          quality: "auto",
-          fetch_format: "auto",
-        },
-      ],
     });
     return {
       url: uploadResponse.secure_url,
@@ -37,6 +21,14 @@ export const uploadImage = async (fileStr: string) => {
   } catch (error) {
     console.error("Cloudinary upload error:", error);
     throw new Error("Image upload failed");
+  }
+};
+
+export const deleteImage = async (publicId: string) => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Cloudinary delete error:", error);
   }
 };
 

@@ -6,9 +6,10 @@ import * as z from "zod";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
 import { forgotPassword } from "../services/authService";
 import MainLayout from "../components/layout/MainLayout";
+import { getErrorMessage } from "../utils/errors";
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address"),
 });
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -33,8 +34,8 @@ const ForgotPasswordPage = () => {
     try {
       const res = await forgotPassword(data.email);
       setMessage(res.message);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send reset email");
+    } catch (err) {
+      setError(getErrorMessage(err, "Failed to send reset email"));
     } finally {
       setIsLoading(false);
     }

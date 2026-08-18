@@ -5,14 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { getActivePromotions } from "../../../services/promotionService";
 import CloudinaryImage from "../../../components/common/CloudinaryImage";
+import type { Promotion } from "../../../types";
 
 const PromotionsSidebar = () => {
-  const { data: promos, isLoading } = useQuery<any[]>({
+  const { data: promos, isLoading } = useQuery<Promotion[]>({
     queryKey: ["promotions"],
     queryFn: async () => {
       const res = await getActivePromotions();
-      // service may return a paginated object { promotions, page, pages }
-      return (res as any).promotions ?? res;
+      return res.promotions;
     },
   });
 

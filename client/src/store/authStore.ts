@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthStore>()(
           if (savedCart) {
             try {
               useCartStore.getState().setItems(JSON.parse(savedCart));
-            } catch (e) {
+            } catch {
               useCartStore.getState().setItems([]);
             }
           } else {

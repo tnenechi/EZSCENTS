@@ -11,7 +11,7 @@ import {
 } from "../../services/productService";
 import { uploadImage } from "../../services/uploadService";
 import CloudinaryImage from "../../components/common/CloudinaryImage";
-import type { ImageRef } from "../../types";
+import type { ImageRef, Product } from "../../types";
 import AdminLayout from "../../components/layout/AdminLayout";
 
 const productSchema = z.object({
@@ -133,7 +133,9 @@ const AdminProductEditPage = () => {
   const onSubmit = async (data: ProductFormValues) => {
     setIsSaving(true);
     try {
-      const productData = { ...data, images } as any;
+      // The form's variants don't carry an _id yet (assigned server-side on
+      // create), so this doesn't structurally match Product's variants type.
+      const productData = { ...data, images } as Partial<Product>;
       if (isEditMode) {
         await updateProduct(id as string, productData);
       } else {

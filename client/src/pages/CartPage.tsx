@@ -144,13 +144,13 @@ const CartPage = () => {
               </h2>
 
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between text-sm text-premium-muted">
+                <div className="flex gap-6 text-sm text-premium-muted">
                   <span className="uppercase tracking-widest">Subtotal</span>
                   <span className="text-foreground font-bold">
                     ₦{getTotal().toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm text-premium-muted">
+                <div className="flex gap-6 text-sm text-premium-muted">
                   <span className="uppercase tracking-widest">Delivery</span>
                   <span className="text-foreground font-bold">
                     Calculated at checkout
@@ -176,13 +176,6 @@ const CartPage = () => {
                 Proceed to Checkout
                 <ArrowRight size={18} />
               </button>
-
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-3 text-[10px] text-premium-muted uppercase tracking-widest">
-                  <div className="w-1 h-1 bg-premium-gold rounded-full" />
-                  Free Delivery on orders over ₦50,000
-                </div>
-              </div>
             </div>
           </div>
         </div>

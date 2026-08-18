@@ -18,9 +18,13 @@ import { getMyOrders } from "../services/orderService";
 import { changePassword } from "../services/authService";
 import MainLayout from "../components/layout/MainLayout";
 import { Link } from "react-router-dom";
+import { getErrorMessage } from "../utils/errors";
+import type { Order, OrderItem } from "../types";
+
+type ProfileTab = "orders" | "security";
 
 const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState<"orders" | "security">("orders");
+  const [activeTab, setActiveTab] = useState<ProfileTab>("orders");
   const { userInfo } = useAuthStore();
 
   const { data: orders, isLoading: isLoadingOrders } = useQuery({
@@ -53,10 +57,10 @@ const ProfilePage = () => {
         confirmPassword: "",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       setPasswordStatus({
         type: "error",
-        message: error.response?.data?.message || "Failed to update password",
+        message: getErrorMessage(error, "Failed to update password"),
       });
     },
   });
@@ -70,7 +74,7 @@ const ProfilePage = () => {
     changePasswordMutation.mutate();
   };
 
-  const tabs = [
+  const tabs: { id: ProfileTab; label: string; icon: typeof ShoppingBag }[] = [
     { id: "orders", label: "Orders", icon: ShoppingBag },
     { id: "security", label: "Security", icon: Lock },
   ];
@@ -97,7 +101,7 @@ const ProfilePage = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center justify-between p-4 text-[10px] font-bold uppercase tracking-widest transition-all rounded-sm ${
                     activeTab === tab.id
                       ? "bg-premium-gold text-premium-black"
@@ -164,7 +168,7 @@ const ProfilePage = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {orders?.map((order: any) => (
+                      {orders?.map((order: Order) => (
                         <div
                           key={order._id}
                           className="bg-premium-gray/10 border border-premium-border/10 p-8 hover:border-premium-gold/30 transition-colors rounded-sm group"
@@ -205,7 +209,7 @@ const ProfilePage = () => {
 
                           {/* Item Preview */}
                           <div className="flex gap-4 overflow-x-auto pb-6 border-b border-premium-border/10 mb-8">
-                            {order.orderItems.map((item: any, idx: number) => (
+                            {order.orderItems.map((item: OrderItem, idx: number) => (
                               <div
                                 key={idx}
                                 className="w-14 h-14 bg-premium-gray shrink-0 border border-premium-border/10 rounded-sm overflow-hidden"

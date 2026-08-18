@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, User as UserIcon, Menu, LogOut, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
@@ -35,14 +35,14 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const menuVariants = {
+  const menuVariants: Variants = {
     closed: {
-      x: "-100%" as any,
-      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+      x: "-100%",
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     },
     open: {
       x: 0,
-      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     },
   };
 

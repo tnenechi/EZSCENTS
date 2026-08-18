@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   CreditCard,
   Landmark,
@@ -18,18 +17,12 @@ import { useAuthStore } from "../store/authStore";
 import { createOrder } from "../services/orderService";
 import MainLayout from "../components/layout/MainLayout";
 import { getImageUrl } from "../utils/cloudinary";
+import { buildOrderTrackingPath } from "../utils/orderTracking";
 import CloudinaryImage from "../components/common/CloudinaryImage";
-
-const shippingSchema = z.object({
-  address: z.string().min(5, "Address is too short"),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  phone: z.string().min(10, "Enter a valid phone number"),
-  guestName: z.string().optional(),
-  guestEmail: z.string().email("Invalid email").optional().or(z.literal("")),
-});
-
-type ShippingFormValues = z.infer<typeof shippingSchema>;
+import {
+  shippingSchema,
+  type ShippingFormValues,
+} from "../validation/checkoutSchema";
 
 interface BankTransferInstructionsProps {
   handleCopy: (text: string) => void;
@@ -467,7 +460,14 @@ const CheckoutPage = () => {
 
                   <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto pt-8">
                     <button
-                      onClick={() => navigate(`/order/${createdOrderId}`)}
+                      onClick={() =>
+                        navigate(
+                          buildOrderTrackingPath(
+                            createdOrderId as string,
+                            formData?.guestEmail,
+                          ),
+                        )
+                      }
                       className="flex-1 bg-foreground text-background py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-premium-gold hover:text-black transition-all"
                     >
                       Track My Order
@@ -497,14 +497,16 @@ const CheckoutPage = () => {
                       key={`${item.product._id}-${item.variant._id}`}
                       className="flex gap-4"
                     >
-                      <div className="w-12 h-12 bg-premium-gray overflow-hidden">
+                      <div className="w-12 h-12 lg:w-16 lg:h-16 bg-premium-gray overflow-hidden shrink-0">
                         <CloudinaryImage
                           image={item.product.images[0]}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
+                          width={64}
+                          height={64}
                         />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-bold uppercase truncate text-foreground">
                           {item.product.name}
                         </p>
@@ -512,7 +514,7 @@ const CheckoutPage = () => {
                           {item.quantity} x {item.variant.size}
                         </p>
                       </div>
-                      <p className="text-[10px] font-bold text-foreground">
+                      <p className="text-[10px] font-bold text-foreground shrink-0">
                         ₦{item.variant.price.toLocaleString()}
                       </p>
                     </div>

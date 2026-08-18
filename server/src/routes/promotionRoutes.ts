@@ -6,13 +6,18 @@ import {
   deletePromotion,
 } from '../controllers/promotionController';
 import { protect, admin } from '../middleware/authMiddleware';
+import { validateBody } from '../middleware/validate';
+import { createPromotionSchema, updatePromotionSchema } from '../validation/schemas';
 
 const router = express.Router();
 
-router.route('/').get(getActivePromotions).post(protect, admin, createPromotion);
+router
+  .route('/')
+  .get(getActivePromotions)
+  .post(protect, admin, validateBody(createPromotionSchema), createPromotion);
 router
   .route('/:id')
-  .put(protect, admin, updatePromotion)
+  .put(protect, admin, validateBody(updatePromotionSchema), updatePromotion)
   .delete(protect, admin, deletePromotion);
 
 export default router;

@@ -1,8 +1,8 @@
 import api from "./api";
-import type { Order, ShippingAddress } from "../types";
+import type { Order, OrderItem, ShippingAddress } from "../types";
 
 export interface OrderData {
-  orderItems: any[];
+  orderItems: Omit<OrderItem, "_id">[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
   totalPrice: number;
@@ -17,14 +17,19 @@ export const createOrder = async (order: OrderData): Promise<Order> => {
   return data;
 };
 
-export const getOrderDetails = async (id: string): Promise<Order> => {
-  const { data } = await api.get<Order>(`/orders/${id}`);
+export const getOrderDetails = async (
+  id: string,
+  guestEmail?: string,
+): Promise<Order> => {
+  const { data } = await api.get<Order>(`/orders/${id}`, {
+    params: guestEmail ? { email: guestEmail } : undefined,
+  });
   return data;
 };
 
 export const payOrder = async (
   id: string,
-  paymentResult: any,
+  paymentResult: Record<string, unknown>,
 ): Promise<Order> => {
   const { data } = await api.put<Order>(`/orders/${id}/pay`, paymentResult);
   return data;

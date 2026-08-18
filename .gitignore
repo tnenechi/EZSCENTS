@@ -1,1 +1,7 @@
 todo.md
+
+# root-level install artifacts from `npx playwright-cli install --skills`
+# (this repo otherwise has no root package.json — client/ and server/ are independent)
+node_modules
+package.json
+package-lock.json

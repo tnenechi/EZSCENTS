@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import Product from '../models/Product';
 import Promotion from '../models/Promotion';
+import { deleteImage } from '../services/cloudinaryService';
+
+const getPublicId = (image: any): string | undefined =>
+  image && typeof image === 'object' ? image.publicId : undefined;
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -109,6 +113,14 @@ export const updateProduct = async (req: Request, res: Response) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    if (images) {
+      const newPublicIds = new Set(images.map(getPublicId).filter(Boolean));
+      const removedPublicIds = (product.images || [])
+        .map(getPublicId)
+        .filter((id: string | undefined): id is string => !!id && !newPublicIds.has(id));
+      await Promise.all(removedPublicIds.map((id: string) => deleteImage(id)));
+    }
+
     product.name = name || product.name;
     product.brand = brand || product.brand;
     product.description = description || product.description;
@@ -131,6 +143,11 @@ export const deleteProduct = async (req: Request, res: Response) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    const publicIds = (product.images || [])
+      .map(getPublicId)
+      .filter((id: string | undefined): id is string => !!id);
+    await Promise.all(publicIds.map((id: string) => deleteImage(id)));
+
     await Product.deleteOne({ _id: product._id });
     res.json({ message: 'Product removed' });
   } else {

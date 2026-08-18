@@ -22,7 +22,7 @@ const CloudinaryImage = ({
   loading = "lazy",
   decoding = "async",
 }: CloudinaryImageProps) => {
-  const builtImage = buildCloudinaryImage(image) as
+  const builtImage = buildCloudinaryImage(image, width, height) as
     | CloudinaryImageType
     | string;
 

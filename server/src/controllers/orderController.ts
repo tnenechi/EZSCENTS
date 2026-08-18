@@ -1,26 +1,63 @@
 import { Request, Response } from "express";
 import Order from "../models/Order";
 import User from "../models/User";
+import Product from "../models/Product";
 import {
   sendOrderConfirmation,
   sendOrderStatusUpdate,
 } from "../services/emailService";
 import mongoose from "mongoose";
 
+const getImageUrl = (image: any): string =>
+  typeof image === "string" ? image : image?.url || "";
+
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Public
 export const addOrderItems = async (req: Request, res: Response) => {
-  const { orderItems, shippingAddress, paymentMethod, totalPrice, guestInfo } =
-    req.body;
+  const { orderItems, shippingAddress, paymentMethod, guestInfo } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
+  if (!orderItems || orderItems.length === 0) {
     res.status(400).json({ message: "No order items" });
     return;
   }
 
+  // Prices are never trusted from the client — recomputed here from the
+  // authoritative product/variant records to prevent price tampering.
+  const productIds = [...new Set(orderItems.map((item: any) => item.product))];
+  const products = await Product.find({ _id: { $in: productIds } });
+  const productMap = new Map(products.map((p) => [p._id.toString(), p]));
+
+  const verifiedItems: any[] = [];
+  let totalPrice = 0;
+
+  for (const item of orderItems) {
+    const product: any = productMap.get(item.product);
+    const variant = product?.variants.find(
+      (v: any) => v._id.toString() === item.variantId,
+    );
+
+    if (!product || !variant) {
+      res
+        .status(400)
+        .json({ message: `Invalid product or variant in order: ${item.product}` });
+      return;
+    }
+
+    totalPrice += variant.price * item.quantity;
+    verifiedItems.push({
+      name: product.name,
+      quantity: item.quantity,
+      image: getImageUrl(product.images?.[0]),
+      price: variant.price,
+      product: product._id,
+      variantId: item.variantId,
+      size: variant.size,
+    });
+  }
+
   const order = new Order({
-    orderItems,
+    orderItems: verifiedItems,
     user: (req as any).user?._id,
     guestInfo,
     shippingAddress,
@@ -43,23 +80,40 @@ export const addOrderItems = async (req: Request, res: Response) => {
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
-// @access  Public
+// @access  Private (owner or admin) or guest with matching email
 export const getOrderById = async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id).populate(
     "user",
     "name email",
   );
 
-  if (order) {
-    res.json(order);
-  } else {
+  if (!order) {
     res.status(404).json({ message: "Order not found" });
+    return;
   }
+
+  const requester = (req as any).user;
+  const isAdmin = requester?.role === "admin";
+  const isOwner =
+    requester && order.user && order.user._id.toString() === requester._id.toString();
+  const guestEmail =
+    typeof req.query.email === "string" ? req.query.email.trim().toLowerCase() : "";
+  const isMatchingGuest =
+    !order.user &&
+    !!order.guestInfo?.email &&
+    guestEmail === order.guestInfo.email.toLowerCase();
+
+  if (!isAdmin && !isOwner && !isMatchingGuest) {
+    res.status(403).json({ message: "Not authorized to view this order" });
+    return;
+  }
+
+  res.json(order);
 };
 
 // @desc    Update order to paid
 // @route   PUT /api/orders/:id/pay
-// @access  Private
+// @access  Private/Admin
 export const updateOrderToPaid = async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id);
 

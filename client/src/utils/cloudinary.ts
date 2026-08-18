@@ -1,5 +1,6 @@
 import { Cloudinary } from "@cloudinary/url-gen";
 import type { CloudinaryImage as CloudinaryImageType } from "@cloudinary/url-gen";
+import { fill } from "@cloudinary/url-gen/actions/resize";
 // using direct string args for format/quality to match SDK method signatures
 import type { ImageRef, CloudinaryImageRef } from "../types";
 
@@ -34,9 +35,15 @@ export const getImageUrl = (image: ImageRef): string => {
 
 export const buildCloudinaryImage = (
   image: ImageRef,
+  width?: number,
+  height?: number,
 ): CloudinaryImageType | string => {
   if (isCloudinaryImageRef(image)) {
-    return cld.image(image.publicId).format("auto").quality("auto");
+    const cldImage = cld.image(image.publicId).format("auto").quality("auto");
+    if (width && height) {
+      cldImage.resize(fill(width, height));
+    }
+    return cldImage;
   }
 
   return image;
